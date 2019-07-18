@@ -1,0 +1,27 @@
+{% extends 'post/base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-4 col-md-6 col-sm-12 mx-auto wrapper">
+        <form method="post">
+            {% csrf_token %}
+            <div class="row error">
+                {{ error }}
+            </div>
+            <label class="form-group col-12"> Логин
+                <input name="login" class="form-control" placeholder="Логин"/>
+            </label>
+            <label class="form-group col-12">Пароль
+                <input name="password" type="password" class="form-control" placeholder="Пароль"/>
+            </label>
+            <div class="form-group col-12 text-center">
+                <button class="btn btn-secondary">Авторизоваться</button>
+            </div>
+             <div class="col-12 text-center">
+                <a href="{% url 'view_registration' %}">Регистрация</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+{% endblock %}

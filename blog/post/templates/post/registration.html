@@ -1,0 +1,46 @@
+{% extends 'post/base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-4 col-md-6 col-sm-12 mx-auto wrapper">
+        <div>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.non_field_errors }}
+
+                {{ form.username.errors }}
+                <label class="form-group col-12">
+                    Логин
+                    <input type="text" name="username" class="form-control" autofocus required id="id_username" maxlength="150" />
+                </label>
+                {{ form.password1.errors }}
+                <label  class="form-group col-12">
+                    Пароль
+                       <input type="password" class="form-control" name="password1" required id="id_password1" />
+                </label>
+                {{ form.password2.errors }}
+                <label  class="form-group col-12">
+                    Пароль повторно
+                        <input type="password" class="form-control" name="password2" required id="id_password2" />
+                </label>
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <button class="btn btn-primary">Зарегистрироваться</button>
+                    </div>
+                </div>
+            </form>
+            <div class="row">
+                <div class="col-12 text-center">
+                    <a href="{% url 'view_login' %}" >Авторизация</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 text-center">
+                    <a href="{% url 'view_posts' %}">Вернуться на главную</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

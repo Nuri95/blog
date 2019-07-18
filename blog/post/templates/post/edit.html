@@ -1,0 +1,36 @@
+{% extends 'post/base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 col-md-12 col-sm-12 mx-auto">
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <div class="row">
+                {{ form.title.errors }}
+                <label class="form-group col-12">
+                    Заголовок
+                    <input name="title" type="text" class="form-control" maxlength="200" required value="{{ form.title.value }}"/>
+                </label>
+            </div>
+            <div class="row">
+                {{ form.body.errors }}
+                <label class="form-group col-12">
+                    Пост
+                    <textarea name="body" class="form-control" rows="10" required >{{ form.body.value }}</textarea>
+                </label>
+            </div>
+            <div class="row">
+                <div class="col-12 text-center">
+                    <button class="btn btn-primary">Сохранить</button>
+                </div>
+            </div>
+        </form>
+        <div class="row">
+            <div class="col-12 text-center">
+                <a href="{% url 'view_posts' %}">Вернуться на главную</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

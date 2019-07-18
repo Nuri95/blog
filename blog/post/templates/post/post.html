@@ -1,0 +1,33 @@
+{% extends 'post/base.html' %}
+{% block content %}
+<div>
+    <div class="post">
+        <div>
+            <blockquote class="blockquote">
+                <h3>
+                    {{ post.title }}
+                </h3>
+                <footer class="blockquote-footer font-italic footer_list">
+                    <span>{{ post.user }}</span>
+                    <span> {{ post.date }}</span>
+                </footer>
+            </blockquote>
+        </div>
+        <div>
+            <textarea name="body" disabled="disabled"  class="form-control" rows="10">{{ post.body }}</textarea>
+        </div>
+        <div>
+            {% if post.user == user %}
+                <a href="{% url 'view_edit' post.id %}">Редактировать</a>
+            {% endif %}
+        </div>
+        <div>
+            <a href="{% url 'view_posts' %}">Вернуться на главную</a>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+

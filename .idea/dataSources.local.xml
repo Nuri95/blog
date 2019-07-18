@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="dataSourceStorageLocal">
+    <data-source name="blog@localhost" uuid="204edf6e-feee-44e1-894e-ed4f73bac84e">
+      <database-info product="PostgreSQL" version="9.6.13" jdbc-version="4.2" driver-name="PostgreSQL JDBC Driver" driver-version="42.2.5" family="POSTGRES" exact-version="9.6.13">
+        <identifier-quote-string>&quot;</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="lower" quoted-identifiers="exact" />
+      <secret-storage>master_key</secret-storage>
+      <user-name>blog</user-name>
+      <introspection-schemas>@:@|blog:public</introspection-schemas>
+    </data-source>
+    <data-source name="db" uuid="57b15685-7536-4e78-93e7-6f52a8ebf9e5">
+      <database-info product="SQLite" version="3.25.1" jdbc-version="2.1" driver-name="SQLite JDBC" driver-version="3.25.1" family="SQLITE" exact-version="3.25.1">
+        <identifier-quote-string>&quot;</identifier-quote-string>
+      </database-info>
+      <case-sensitivity plain-identifiers="mixed" quoted-identifiers="mixed" />
+      <auth-required>false</auth-required>
+      <introspection-schemas>*:@</introspection-schemas>
+    </data-source>
+  </component>
+</project>

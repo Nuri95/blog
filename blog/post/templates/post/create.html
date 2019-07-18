@@ -1,0 +1,30 @@
+{% extends 'post/base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 col-md-12 col-sm-12 mx-auto">
+        <form method="POST" action="{% url 'view_create' %}">
+            {% csrf_token %}
+            <div class="row">
+                {{ form.non_field_errors }}
+                <label class="form-group col-12">
+                    {{ form.title.errors }}
+                    Заголовок
+                    <input name="title" class="form-control" type="text" maxlength="200" required/>
+                </label>
+            </div>
+            <div class="row">
+                <label class="form-group col-12">
+                    {{ form.body.errors }}
+                    Текст
+                    <textarea class="form-control"  name="body" rows="10" required ></textarea>
+                </label>
+            </div>
+            <div class="row">
+            <div class="col-12 text-center">
+                <button class="btn btn-primary">Сохранить</button>
+            </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+.blockquote-footer{
+    font-size: 60%;
+}
+.blockquote-footer::before{
+    content: none;
+}
+.post span{
+    padding: 10px;
+}
+.nav_pag{
+    padding: 20px;
+}
+.page-info{
+    padding-left: 45px;
+    padding-top: 20px;
+}
+.wrapper{
+    display: flex;
+    align-items: center;
+    height: calc(100vh - 40px);
+}
+.error{
+    color: red;
+    padding-left: 30px;
+}
+.footer_list{
+    padding-top: 10px;
+}

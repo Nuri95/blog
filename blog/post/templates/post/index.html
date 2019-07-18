@@ -1,0 +1,101 @@
+{% extends 'post/base.html' %}
+{% block content %}
+
+<div>
+    {% for post in posts %}
+        <ul class="list-group">
+            <li class="list-group-item">
+                <div class="row">
+                    <div class="col-md-4">
+                        <blockquote class="blockquote">
+                            <a href="{% url 'view_post' post.id %}">
+                                {{ post.title }}
+                            </a>
+                            <footer class="blockquote-footer font-italic footer_list">
+                                <span>{{ post.user }}</span>
+                                <span>{{ post.date|date:"d E Y H Z" }}</span>
+                            </footer>
+                        </blockquote>
+                    </div>
+                    <div class="col-md-4">
+                        {% if post.user == user %}
+                        <span>
+                            <a href="{% url 'view_edit' post.id %}">Редактировать</a>
+                        </span>
+                    </div>
+                    <div class="col-md-4">
+                        <span>
+                            <a href="#" onclick="removePost({{ post.id }}); return false;">Удалить</a>
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </li>
+        </ul>
+    {% endfor %}
+
+    <div class="row">
+        <div class="col-md-2 page-info">
+            <span>Страница {{ page_number}}</span>
+        </div>
+        <div class="col-md-2 page-info">
+            <span>Постов {{ count }}</span>
+        </div>
+    </div>
+
+    <nav aria-label="Search results pages">
+        <div class="nav_pag">
+            <ul class="pagination">
+            {% if page_previous > 0 %}
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'view_posts' %}?page={{ page_previous }}">Предыдущая страница</a>
+                </li>
+            {% endif %}
+            {% if page_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{% url 'view_posts' %}?page={{ page_next }}">Следующая страница</a>
+                </li>
+            {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+</div>
+
+
+<script>
+    function removePost(postid){
+        var x= new XMLHttpRequest();
+        x.open('DELETE', '/post/' + postid + '/', true);
+        x.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        x.onreadystatechange = function () {
+            if (x.readyState !== 4)
+                return;
+            if (x.status !== 200)
+                alert('Ошибка удаления');
+            else
+                document.location.reload();
+        };
+        x.send()
+    }
+
+    function getCookie(name) {
+             var cookieValue = null;
+             if (document.cookie && document.cookie != '') {
+                 var cookies = document.cookie.split(';');
+                 console.log(cookies);
+                 for (var i = 0; i < cookies.length; i++) {
+                     var cookie = cookies[i].trim();
+                     console.log(cookie)
+                     // Does this cookie string begin with the name we want?
+                     if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                         console.log(cookieValue)
+                         break;
+                     }
+                 }
+             }
+             return cookieValue;
+         }
+</script>
+{% endblock %}
