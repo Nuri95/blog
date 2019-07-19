@@ -5,16 +5,14 @@
         <form method="post">
             {% csrf_token %}
             <div class="row error">
-                {{ error }}
                 {{ form.password.errors}}
-                {{ form.login.errors}}
-
             </div>
-            <label class="form-group col-12"> Логин
-                <input name="login" class="form-control"  placeholder="Логин"/>
+            <label class="form-group col-12">
+                Логин
+                <input name="login" class="form-control" required placeholder="Логин"/>
             </label>
             <label class="form-group col-12">Пароль
-                <input name="password" type="password" class="form-control"  placeholder="Пароль"/>
+                <input name="password" type="password" class="form-control" required placeholder="Пароль"/>
             </label>
             <div class="form-group col-12 text-center">
                 <button class="btn btn-secondary">Авторизоваться</button>

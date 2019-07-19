@@ -35,7 +35,6 @@ class IndexView(TemplateView):
         context['page_number'] = int(page_number)
         context['page_previous'] = int(page_number) - 1
         context['posts'] = posts
-
         if context['page_size'] * context['page_number'] < context['count']:
             context['page_next'] = int(page_number) + 1
         else:
@@ -59,7 +58,6 @@ class PostView(TemplateView):
     def delete(self, request, *args, **kwargs):
         postid = kwargs['postid']
         post = get_object_or_404(Post, pk=postid)
-
         if post.user == request.user:
             post.delete()
             return HttpResponse()
@@ -73,7 +71,6 @@ class PostView(TemplateView):
         except Post.DoesNotExist:
             raise Http404()
         return self.render_to_response(self.get_context_data(post=post))
-
 
 # class LoginView(TemplateView):
 #     template_name = 'post/login.html'
@@ -114,10 +111,6 @@ class LoginView(FormView):
     template_name = 'post/login.html'
     form_class = LoginForm
 
-    # def dispatch(self, request, *args, **kwargs):
-    #     print '1232441'
-    #     return super(LoginView, self).post(request, *args, **kwargs)
-
     def get_success_url(self):
         return reverse('view_posts')
 
@@ -125,7 +118,6 @@ class LoginView(FormView):
         username = form.cleaned_data['login']
         password = form.cleaned_data['password']
         user = authenticate(username=username, password=password)
-        print 'form=', form
         if user is not None:
             login(self.request, user)
         else:
@@ -160,7 +152,6 @@ class RegistrationView(TemplateView):
 class LogoutView(View):
     @method_decorator(login_required())
     def post(self, request, *args, **kwargs):
-        print 'request', request
         auth_logout(request)
         return HttpResponse()
 
@@ -201,10 +192,9 @@ class PostEditView(FormView):
         if self.post_object.user == request.user:
             return super(PostEditView, self).dispatch(request, *args, **kwargs)
         else:
-                raise Http404
+            raise Http404
 
     def form_valid(self, form):
-        print 'form', form
         form.save()
         return super(PostEditView, self).form_valid(form)
 
@@ -217,30 +207,53 @@ class PostEditView(FormView):
         return x
 
 
-class PostCreateView(TemplateView):
+class PostCreateView(FormView):
     template_name = 'post/create.html'
+    form_class = PostForm
 
-    def get(self, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         if not self.request.user.is_authenticated():
             return redirect(reverse('view_login'))
-        context = self.get_context_data(**kwargs)
-        context['error'] = ''
-        print 'context=', context
-        return self.render_to_response(context)
+        return super(PostCreateView, self).dispatch(request, *args, **kwargs)
 
-    @method_decorator(login_required())
-    def post(self, request, *args, **kwargs):
-        post = Post(title=self.request.POST['title'],
-                    body=self.request.POST['body'],
-                    date=timezone.now(),
-                    user=request.user)
+    def form_valid(self, form):
+        form.save()
+        return super(PostCreateView, self).form_valid(form)
 
-        form = PostForm(request.POST, instance=post)
+    def get_success_url(self):
+        return reverse('view_posts')
 
-        if form.is_valid():
-            form.save()
-        else:
-            return self.render_to_response(self.get_context_data(form=form))
-        context = self.get_context_data(**kwargs)
-        context['user='] = request.user
-        return redirect(reverse('view_posts'))
+    def get_form_kwargs(self):
+        x = super(PostCreateView, self).get_form_kwargs()
+        x['instance'] = Post(date=timezone.now(),
+                             user=self.request.user)
+        return x
+
+
+# class PostCreateView(TemplateView):
+#     template_name = 'post/create.html'
+#
+#     def get(self, *args, **kwargs):
+#         if not self.request.user.is_authenticated():
+#             return redirect(reverse('view_login'))
+#         context = self.get_context_data(**kwargs)
+#         print 'context=', context
+#         return self.render_to_response(context)
+#
+#     @method_decorator(login_required())
+#     def post(self, request, *args, **kwargs):
+#         post = Post(title=self.request.POST['title'],
+#                     body=self.request.POST['body'],
+#                     date=timezone.now(),
+#                     user=request.user)
+#
+#         form = PostForm(request.POST, instance=post)
+#
+#         if form.is_valid():
+#             form.save()
+#         else:
+#             return self.render_to_response(self.get_context_data(form=form))
+#         context = self.get_context_data(**kwargs)
+#         context['user='] = request.user
+#         return redirect(reverse('view_posts'))
+#
