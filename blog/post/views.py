@@ -6,14 +6,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.core.paginator import Paginator, PageNotAnInteger
 from django.http import HttpResponse, Http404
-from django.shortcuts import redirect, render_to_response, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import TemplateView, FormView
 
-from forms import PostForm
+from forms import PostForm, LoginForm
 from models import Post
 
 
@@ -47,6 +47,10 @@ class IndexView(TemplateView):
             return redirect(reverse('view_login'))
         return super(IndexView, self).dispatch(request, *args, **kwargs)
 
+    # @method_decorator(login_required)
+    # def dispatch(self, request, *args, **kwargs):
+    #     return super().dispatch(request, *args, **kwargs)
+
 
 class PostView(TemplateView):
     template_name = 'post/post.html'
@@ -71,41 +75,65 @@ class PostView(TemplateView):
         return self.render_to_response(self.get_context_data(post=post))
 
 
-class LoginView(TemplateView):
-    template_name = 'post/login.html'
-
-    # def get(self, *args, **kwargs):
-    #     if self.request.user.is_authenticated():
-    #         return redirect(reverse('view_posts'))
-    #     context = self.get_context_data(**kwargs)
-    #     return self.render_to_response(context)
-
-    def dispatch(self, request, *args, **kwargs):
-        if self.request.user.is_authenticated():
-            return redirect(reverse('view_posts'))
-        return super(LoginView, self).dispatch(request, *args, **kwargs)
-
-    def post(self, *args, **kwargs):
-        if self.request.user.is_authenticated():
-            return HttpResponse(status=400)
-        username = self.request.POST['login']
-        password = self.request.POST['password']
-        user = authenticate(username=username, password=password)
-        if user:
-            if user.is_active:
-                login(self.request, user)
-                return redirect(reverse('view_posts'))
-            else:
-                context = self.get_context_data(**kwargs)
-                context['error'] = 'User not active'
-                return self.render_to_response(context)
-        else:
-            context = self.get_context_data(**kwargs)
-            context['error'] = 'Invalid credentials'
-            return self.render_to_response(context)
-
-# class LoginView(FormView):
+# class LoginView(TemplateView):
+#     template_name = 'post/login.html'
 #
+#     def dispatch(self, request, *args, **kwargs):
+#         if self.request.user.is_authenticated():
+#             return redirect(reverse('view_posts'))
+#         return super(LoginView, self).dispatch(request, *args, **kwargs)
+#
+#     def get(self, *args, **kwargs):
+#         if self.request.user.is_authenticated():
+#             return redirect(reverse('view_posts'))
+#         context = self.get_context_data(**kwargs)
+#         return self.render_to_response(context)
+#
+#     def post(self, *args, **kwargs):
+#         if self.request.user.is_authenticated():
+#             return HttpResponse(status=400)
+#         username = self.request.POST['login']
+#         password = self.request.POST['password']
+#         user = authenticate(username=username, password=password)
+#         print 'user', user
+#         if user:
+#             if user.is_active:
+#                 login(self.request, user)
+#                 return redirect(reverse('view_posts'))
+#             else:
+#                 context = self.get_context_data(**kwargs)
+#                 context['error'] = 'User not active'
+#                 return self.render_to_response(context)
+#         else:
+#             context = self.get_context_data(**kwargs)
+#             context['error'] = 'Invalid credentials'
+#             return self.render_to_response(context)
+
+
+class LoginView(FormView):
+    template_name = 'post/login.html'
+    form_class = LoginForm
+
+    # def dispatch(self, request, *args, **kwargs):
+    #     print '1232441'
+    #     return super(LoginView, self).post(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('view_posts')
+
+    def form_valid(self, form):
+        username = form.cleaned_data['login']
+        password = form.cleaned_data['password']
+        user = authenticate(username=username, password=password)
+        print 'form=', form
+        if user is not None:
+            login(self.request, user)
+        else:
+            form.add_error('password',
+                           'Не удается войти. Проверьте логин и пароль.'
+                           )
+            return self.render_to_response(self.get_context_data(form=form))
+        return super(LoginView, self).form_valid(form)
 
 
 class RegistrationView(TemplateView):
@@ -137,31 +165,56 @@ class LogoutView(View):
         return HttpResponse()
 
 
-class PostEditView(TemplateView):
+# class PostEditView(TemplateView):
+#     template_name = 'post/edit.html'
+#
+#     def post(self, request, *args, **kwargs):
+#         postid = kwargs['postid']
+#         post = get_object_or_404(Post, pk=postid)
+#         if post.user == request.user:
+#             form = PostForm(request.POST, instance=post)
+#             if form.is_valid():
+#                 form.save()
+#                 return redirect(reverse('view_posts'))
+#             return render_to_response(self.get_context_data(form=form))
+#         else:
+#             raise Http404()
+#
+#     def get(self, request, *args, **kwargs):
+#         postid = kwargs['postid']
+#         post = get_object_or_404(Post, pk=postid)
+#         if post.user == request.user:
+#             return self.render_to_response(self.get_context_data(
+#                 post=post,
+#                 form=PostForm(instance=post))
+#             )
+#         else:
+#             raise Http404()
+
+
+class PostEditView(FormView):
     template_name = 'post/edit.html'
+    form_class = PostForm
 
-    def post(self, request, *args, **kwargs):
-        postid = kwargs['postid']
-        post = get_object_or_404(Post, pk=postid)
-        if post.user == request.user:
-            form = PostForm(request.POST, instance=post)
-            if form.is_valid():
-                form.save()
-                return redirect(reverse('view_posts'))
-            return render_to_response(self.get_context_data(form=form))
+    def dispatch(self, request, *args, **kwargs):
+        self.post_object = get_object_or_404(Post, pk=kwargs['postid'])
+        if self.post_object.user == request.user:
+            return super(PostEditView, self).dispatch(request, *args, **kwargs)
         else:
-            raise Http404()
+                raise Http404
 
-    def get(self, request, *args, **kwargs):
-        postid = kwargs['postid']
-        post = get_object_or_404(Post, pk=postid)
-        if post.user == request.user:
-            return self.render_to_response(self.get_context_data(
-                post=post,
-                form=PostForm(instance=post))
-            )
-        else:
-            raise Http404()
+    def form_valid(self, form):
+        print 'form', form
+        form.save()
+        return super(PostEditView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('view_posts')
+
+    def get_form_kwargs(self):
+        x = super(PostEditView, self).get_form_kwargs()
+        x['instance'] =self.post_object
+        return x
 
 
 class PostCreateView(TemplateView):
