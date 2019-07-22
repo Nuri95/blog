@@ -22,5 +22,8 @@ urlpatterns = [
         ),
     url(r'^create/$', views.PostCreateView.as_view(),
         name='view_create'
+        ),
+    url(r'^delete/(?P<postid>\d+)/$', views.PostDeleteView.as_view(),
+        name='view_delete'
         )
 ]

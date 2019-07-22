@@ -1,7 +1,15 @@
 {% extends 'post/base.html' %}
 {% block content %}
 
+<div class="row">
+    <div class="col-12">
+        <label>Мои посты
+            <input id="my_posts" type="checkbox"/>
+        </label>
+    </div>
+</div>
 <div>
+
     {% for post in posts %}
         <ul class="list-group">
             <li class="list-group-item">
@@ -25,7 +33,7 @@
                     </div>
                     <div class="col-md-4">
                         <span>
-                            <a href="#" onclick="removePost({{ post.id }}); return false;">Удалить</a>
+                            <a href="#" onclick="removePost({;{ post.id }}) return false;">Удалить</a>
                         </span>
                         {% endif %}
                     </div>
@@ -48,12 +56,14 @@
             <ul class="pagination">
             {% if page_previous > 0 %}
                 <li class="page-item">
-                    <a class="page-link" href="{% url 'view_posts' %}?page={{ page_previous }}">Предыдущая страница</a>
+                    <!--<a class="page-link" href="{% url 'view_posts' %}?page={{ page_previous }}">Предыдущая страница</a>-->
+                    <a class="page-link" href="#" data-page="{{ page_previous }}">Предыдущая страница</a>
                 </li>
             {% endif %}
             {% if page_next %}
                 <li class="page-item">
-                    <a class="page-link" href="{% url 'view_posts' %}?page={{ page_next }}">Следующая страница</a>
+                    <!--<a class="page-link" href="{% url 'view_posts' %}?page={{ page_next }}">Следующая страница</a>-->
+                    <a class="page-link" href="#" data-page="{{ page_next }}">Следующая страница</a>
                 </li>
             {% endif %}
             </ul>
@@ -64,38 +74,9 @@
 
 
 <script>
-    function removePost(postid){
-        var x= new XMLHttpRequest();
-        x.open('DELETE', '/post/' + postid + '/', true);
-        x.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
-        x.onreadystatechange = function () {
-            if (x.readyState !== 4)
-                return;
-            if (x.status !== 200)
-                alert('Ошибка удаления');
-            else
-                document.location.reload();
-        };
-        x.send()
-    }
-
-    function getCookie(name) {
-             var cookieValue = null;
-             if (document.cookie && document.cookie != '') {
-                 var cookies = document.cookie.split(';');
-                 console.log(cookies);
-                 for (var i = 0; i < cookies.length; i++) {
-                     var cookie = cookies[i].trim();
-                     console.log(cookie)
-                     // Does this cookie string begin with the name we want?
-                     if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                         console.log(cookieValue)
-                         break;
-                     }
-                 }
-             }
-             return cookieValue;
-         }
+    window.onload = function () {
+        attachMyPosts();
+        attachDataPage();
+    };
 </script>
 {% endblock %}
