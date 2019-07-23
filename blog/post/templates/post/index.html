@@ -1,82 +1,59 @@
 {% extends 'post/base.html' %}
 {% block content %}
 
-<div class="row">
-    <div class="col-12">
-        <label>Мои посты
-            <input id="my_posts" type="checkbox"/>
-        </label>
-    </div>
-</div>
-<div>
 
+<div class="mt-3">
     {% for post in posts %}
-        <ul class="list-group">
-            <li class="list-group-item">
-                <div class="row">
-                    <div class="col-md-4">
-                        <blockquote class="blockquote">
-                            <a href="{% url 'view_post' post.id %}">
-                                {{ post.title }}
-                            </a>
-                            <footer class="blockquote-footer font-italic footer_list">
-                                <span>{{ post.user }}</span>
-                                <span>{{ post.date|date:"d E Y f" }}</span>
-                            </footer>
-                        </blockquote>
-                    </div>
-                    <div class="col-md-4">
+    <div class="row">
+        <div class="col-md-5">
+            <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                <div class="col p-4 d-flex flex-column position-static">
+                    <strong class="d-inline-block mb-2 text-primary">{{ post.user }}</strong>
+                    <h3 class="mb-0">{{ post.title }}</h3>
+                    <div class="mb-1 text-muted">{{ post.date|date:"d E Y f" }}</div>
+                    <p class="card-text mb-auto">
+                        Здесь будет начало поста.
+                    </p>
+                    <div class="mt-3">
+                        <a href="{% url 'view_post' post.id %}" class="">Прочитать</a>
                         {% if post.user == user %}
-                        <span>
-                            <a href="{% url 'view_edit' post.id %}">Редактировать</a>
-                        </span>
-                    </div>
-                    <div class="col-md-4">
-                        <span>
-                            <a href="#" onclick="removePost({;{ post.id }}) return false;">Удалить</a>
-                        </span>
+                        <a href="#" class="float-right ml-3 text-danger"
+                           onclick="removePost({;{ post.id }}) return false;">Удалить</a>
+                        <a href="{% url 'view_edit' post.id %}" class="float-right">Редактировать</a>
                         {% endif %}
                     </div>
-                </div>
-            </li>
-        </ul>
-    {% endfor %}
 
-    <div class="row">
-        <div class="col-md-2 page-info">
-            <span>Страница {{ page_number}}</span>
-        </div>
-        <div class="col-md-2 page-info">
-            <span>Постов {{ count }}</span>
+                </div>
+
+            </div>
         </div>
     </div>
+    {% endfor %}
 
-    <nav aria-label="Search results pages">
-        <div class="nav_pag">
-            <ul class="pagination">
-            {% if page_previous > 0 %}
-                <li class="page-item">
-                    <!--<a class="page-link" href="{% url 'view_posts' %}?page={{ page_previous }}">Предыдущая страница</a>-->
-                    <a class="page-link" href="#" data-page="{{ page_previous }}">Предыдущая страница</a>
-                </li>
-            {% endif %}
-            {% if page_next %}
-                <li class="page-item">
-                    <!--<a class="page-link" href="{% url 'view_posts' %}?page={{ page_next }}">Следующая страница</a>-->
-                    <a class="page-link" href="#" data-page="{{ page_next }}">Следующая страница</a>
-                </li>
-            {% endif %}
-            </ul>
+
+    <div class="row">
+        <div class="col-sm-12" aria-label="Пагинация">
+            <div class="nav_pag">
+                <ul class="pagination">
+                    {% if page_previous > 0 %}
+                    <li class="page-item">
+                        <a class="page-link" href="#" data-page="{{ page_previous }}">Предыдущая страница</a>
+                    </li>
+                    {% endif %}
+                    {% if page_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="#" data-page="{{ page_next }}">Следующая страница</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
-    </nav>
-
+    </div>
 </div>
-
-<div id="last-changes"></div>
 
 <script>
     window.onload = function () {
-        attachMyPosts();
+        // attachMyPosts();
         attachDataPage();
     };
 </script>
