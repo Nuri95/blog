@@ -25,3 +25,11 @@
 form{
     width: 100%;
 }
+.post-body {
+    white-space: pre;
+}
+
+.post-info {
+    color: #999;
+    font-size: 14px;
+}
