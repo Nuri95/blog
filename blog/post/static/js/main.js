@@ -1,54 +1,35 @@
 function request(type, url, successCallback, failCallback) {
     var x = new XMLHttpRequest();
+
     x.open(type, url, true);
     x.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
-    console.log('lalal');
+
     x.onreadystatechange = function () {
         if (x.readyState !== 4)
             return;
         if (x.status !== 200)
-            failCallback();
-        else
-            successCallback();
+            if (failCallback)
+                failCallback();
+            else if (successCallback)
+                successCallback();
     };
     x.send();
-
 }
 
 function removePost(postid) {
-    // var x = new XMLHttpRequest();
-    // x.open('DELETE', '/delete/' + postid + '/', true);
-    // x.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
-    // x.onreadystatechange = function () {
-    //     if (x.readyState !== 4)
-    //         return;
-    //     if (x.status !== 200)
-    //         alert('Ошибка удаления');
-    //     else
-    //         document.location.reload();
-    // };
-    // x.send();
-
-    request('DELETE', '/delete/' + postid + '/', function() {
+    request('DELETE', '/delete/' + postid + '/', function () {
         document.location.reload();
-    }, function() {
+    }, function () {
         alert('Ошибка удаления');
     });
 }
 
 function logout() {
-    var x = new XMLHttpRequest();
-    x.open('POST', '/logout/', true);
-    x.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
-    x.onreadystatechange = function () {
-        if (x.readyState !== 4)
-            return;
-        if (x.status === 200){
-            alert('Пока');
-            document.location.href = '/';
-        }
-    };
-    x.send()
+    request('POST', '/logout/', function () {
+        alert('Пока');
+        document.location.href = '/'
+
+    });
 }
 
 function getCookie(name) {
@@ -76,11 +57,11 @@ function attachMyPosts() {
     checkbox.onchange = function () {
         if (this.checked) {
             urlParams.set('my', '1');
-        }else {
+        } else {
             urlParams.delete('my');
         }
         urlParams.delete('page');
-        document.location.search=urlParams.toString();
+        document.location.search = urlParams.toString();
     }
 
 }
@@ -88,11 +69,11 @@ function attachMyPosts() {
 function attachDataPage() {
     var click_link = function () {
         var urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('page',this.dataset.page);
-        document.location.search=urlParams.toString();
+        urlParams.set('page', this.dataset.page);
+        document.location.search = urlParams.toString();
         return false;
     };
-    Array.prototype.forEach.call(document.getElementsByClassName('page-link'),function (link) {
+    Array.prototype.forEach.call(document.getElementsByClassName('page-link'), function (link) {
         link.onclick = click_link;
     });
 }

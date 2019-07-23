@@ -101,23 +101,17 @@ class LoginView(FormView):
         return super(LoginView, self).form_valid(form)
 
 
-class RegistrationView(TemplateView):
+class RegistrationView(FormView):
     template_name = 'post/registration.html'
+    form_class = UserCreationForm
 
-    def dispatch(self, request, *args, **kwargs):
-        if self.request.user.is_authenticated():
-            return redirect(reverse('view_posts'))
-        return super(RegistrationView, self).dispatch(request, *args, **kwargs)
+    def get_success_url(self):
+        return reverse('view_posts')
 
-    def post(self, *args, **kwargs):
-        if self.request.user.is_authenticated():
-            return redirect(reverse('view_posts'))
-        form = UserCreationForm(self.request.POST)
-        if form.is_valid():
-            new_user = form.save()
-            login(self.request, new_user)
-            return redirect(reverse('view_posts'))
-        return self.render_to_response(self.get_context_data(form=form))
+    def form_valid(self, form):
+        new_user = form.save()
+        login(self.request, new_user)
+        return super(RegistrationView, self).form_valid(form)
 
 
 class LogoutView(View):
@@ -139,12 +133,6 @@ class PostEditView(FormView):
             raise Http404
         return super(PostEditView, self).dispatch(request, *args, **kwargs)
 
-        # self.post_object = get_object_or_404(Post, pk=kwargs['postid'])
-        # if self.post_object.user == request.user:
-        #     return super(PostEditView, self).dispatch(request, *args, **kwargs)
-        # else:
-        #     raise Http404
-
     def form_valid(self, form):
         form.save()
         return super(PostEditView, self).form_valid(form)
@@ -153,9 +141,9 @@ class PostEditView(FormView):
         return reverse('view_posts')
 
     def get_form_kwargs(self):
-        x = super(PostEditView, self).get_form_kwargs()
-        x['instance'] = self.post_object
-        return x
+        post_edit = super(PostEditView, self).get_form_kwargs()
+        post_edit['instance'] = self.post_object
+        return post_edit
 
 
 class PostCreateView(FormView):
@@ -175,7 +163,8 @@ class PostCreateView(FormView):
         return reverse('view_posts')
 
     def get_form_kwargs(self):
-        x = super(PostCreateView, self).get_form_kwargs()
-        x['instance'] = Post(date=timezone.now(),
-                             user=self.request.user)
-        return x
+        new_post = super(PostCreateView, self).get_form_kwargs()
+        new_post['instance'] = Post(date=timezone.now(),
+                                    user=self.request.user)
+
+        return new_post

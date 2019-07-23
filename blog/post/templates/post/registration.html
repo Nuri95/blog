@@ -2,36 +2,57 @@
 {% block content %}
 <div class="row">
     <div class="col-lg-4 col-md-6 col-sm-12 mx-auto wrapper">
-        <div>
-            <form method="post">
-                {% csrf_token %}
-                <div class="row error">
-                    {{ form.non_field_errors }}
-                    {{ form.username.errors }}
-                    {{ form.password1.errors }}
-                    {{ form.password2.errors }}
-                </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <!--<div class="row error">-->
+            <!--{{ form.non_field_errors }}-->
+            <!--{{ form.username.errors }}-->
+            <!--{{ form.password1.errors }}-->
+            <!--{{ form.password2.errors }}-->
+            <!--</div>-->
+            <div class="row">
                 <label class="form-group col-12">
                     Логин
-                    <input type="text" name="username" class="form-control" autofocus required maxlength="150" />
+                    <input type="text" name="username" class="form-control" autofocus required maxlength="150"/>
                 </label>
-                <label  class="form-group col-12">
-                    Пароль
-                    <input type="password" class="form-control" name="password1" required id="id_password1" />
-                </label>
-                <label  class="form-group col-12">
-                    Пароль повторно
-                    <input type="password" class="form-control" name="password2" required id="id_password2" />
-                </label>
-                <div class="row">
-                    <div class="form-group col-12 text-center">
-                        <button class="btn btn-secondary">Зарегистрироваться</button>
-                    </div>
+            </div>
+            <div class="row">
+                <div class="col-12 error">
+                    {{ form.username.errors}}
+                    {{ form.non_field_errors }}
                 </div>
-            </form>
+            </div>
+            <div class="row">
+                <label class="form-group col-12">
+                    Пароль
+                    <input type="password" class="form-control" name="password1" required id="id_password1"/>
+                </label>
+            </div>
+            <div class="row">
+                <div class="col-12 error">
+                    {{ form.password1.errors}}
+                </div>
+            </div>
+            <div class="row">
+                <label class="form-group col-12">
+                    Пароль повторно
+                    <input type="password" class="form-control" name="password2" required id="id_password2"/>
+                </label>
+            </div>
+            <div class="row">
+                <div class="col-12 error">
+                    {{ form.password2.errors}}
+                </div>
+            </div>
+            <div class="row">
+                <div class="form-group col-12 text-center">
+                    <button class="btn btn-secondary">Зарегистрироваться</button>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-12 text-center">
-                    <a href="{% url 'view_login' %}" >Авторизация</a>
+                    <a href="{% url 'view_login' %}">Авторизация</a>
                 </div>
             </div>
             <div class="row">
@@ -39,7 +60,9 @@
                     <a href="{% url 'view_posts' %}">Вернуться на главную</a>
                 </div>
             </div>
-        </div>
+        </form>
+
+
     </div>
 </div>
 
