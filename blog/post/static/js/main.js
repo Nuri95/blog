@@ -46,34 +46,3 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-
-function attachMyPosts() {
-    var urlParams = new URLSearchParams(window.location.search);
-    var checkbox = document.getElementById('my_posts');
-
-    if (urlParams.has('my') && (+urlParams.get('my') > 0)) {
-        checkbox.checked = true;
-    }
-    checkbox.onchange = function () {
-        if (this.checked) {
-            urlParams.set('my', '1');
-        } else {
-            urlParams.delete('my');
-        }
-        urlParams.delete('page');
-        document.location.search = urlParams.toString();
-    }
-
-}
-
-function attachDataPage() {
-    var click_link = function () {
-        var urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('page', this.dataset.page);
-        document.location.search = urlParams.toString();
-        return false;
-    };
-    Array.prototype.forEach.call(document.getElementsByClassName('page-link'), function (link) {
-        link.onclick = click_link;
-    });
-}
