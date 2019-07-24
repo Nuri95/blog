@@ -20,13 +20,15 @@ from models import Post
 class IndexView(TemplateView):
     template_name = 'post/index.html'
 
-    def get_context_data(self, **kwargs):
-        my_post = self.request.GET.get('my')
-        posts = Post.objects
-        if my_post:
+    def test(self, kwargs, post_filter=False):
+        posts = Post.objects.all()
+
+        if post_filter:
             posts = posts.filter(user=self.request.user)
+
         posts = posts.order_by('-date')
         paginator = Paginator(posts, 10)
+
         try:
             page_number = self.request.GET.get('page', default=1)
             posts = paginator.page(page_number)
@@ -35,22 +37,37 @@ class IndexView(TemplateView):
             posts = paginator.page(1)
         except EmptyPage:
             posts = []
+
         context = super(IndexView, self).get_context_data(**kwargs)
         context['count'] = paginator.count
         context['page_size'] = 10
         context['page_number'] = int(page_number)
         context['page_previous'] = int(page_number) - 1
         context['posts'] = posts
+
         if context['page_size'] * context['page_number'] < context['count']:
             context['page_next'] = int(page_number) + 1
         else:
             context['page_next'] = None
+
         return context
 
+    def get_context_data(self, **kwargs):
+        return self.test(kwargs)
+
     def dispatch(self, request, *args, **kwargs):
+
         if not self.request.user.is_authenticated():
             return redirect(reverse('view_login'))
+
         return super(IndexView, self).dispatch(request, *args, **kwargs)
+
+
+class PostMyView(IndexView):
+    template_name = 'post/index.html'
+
+    def get_context_data(self, **kwargs):
+        return self.test(kwargs, True)
 
 
 class PostView(TemplateView):
@@ -59,6 +76,7 @@ class PostView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(PostView, self).get_context_data(**kwargs)
         context['post'] = get_object_or_404(Post, id=kwargs['postid'])
+
         return context
 
 
@@ -68,12 +86,14 @@ class PostDeleteView(DeleteView):
 
     def delete(self, request, *args, **kwargs):
         self.get_object().delete()
+
         return HttpResponse()
 
     @method_decorator(login_required())
     def dispatch(self, request, *args, **kwargs):
         user = request.user
         object = self.get_object()
+
         if object.user == user:
             return super(PostDeleteView, self).dispatch(request, *args, **kwargs)
         else:
@@ -91,12 +111,14 @@ class LoginView(FormView):
         username = form.cleaned_data['login']
         password = form.cleaned_data['password']
         user = authenticate(username=username, password=password)
+
         if user is not None:
             login(self.request, user)
         else:
             form.add_error('password',
                            'Не удается войти. Проверьте логин и пароль.'
                            )
+
             return self.render_to_response(self.get_context_data(form=form))
         return super(LoginView, self).form_valid(form)
 
@@ -111,6 +133,7 @@ class RegistrationView(FormView):
     def form_valid(self, form):
         new_user = form.save()
         login(self.request, new_user)
+
         return super(RegistrationView, self).form_valid(form)
 
 
@@ -126,11 +149,13 @@ class PostEditView(FormView):
     form_class = PostForm
 
     def dispatch(self, request, *args, **kwargs):
+
         try:
             self.post_object = Post.objects.get(id=kwargs['postid'],
                                                 user=request.user)
         except Post.DoesNotExist:
             raise Http404
+
         return super(PostEditView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
@@ -143,6 +168,7 @@ class PostEditView(FormView):
     def get_form_kwargs(self):
         post_edit = super(PostEditView, self).get_form_kwargs()
         post_edit['instance'] = self.post_object
+
         return post_edit
 
 

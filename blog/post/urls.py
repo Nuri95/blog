@@ -25,5 +25,9 @@ urlpatterns = [
         ),
     url(r'^delete/(?P<postid>\d+)/$', views.PostDeleteView.as_view(),
         name='view_delete'
+        ),
+    url(r'^my/$', views.PostMyView.as_view(),
+        name='view_my'
         )
+
 ]

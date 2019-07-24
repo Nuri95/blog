@@ -8,18 +8,19 @@ function request(type, url, successCallback, failCallback) {
         if (x.readyState !== 4)
             return;
         if (x.status !== 200)
-            if (failCallback)
-                failCallback();
-            else if (successCallback)
-                successCallback();
+            failCallback();
+        else
+            successCallback();
     };
     x.send();
 }
 
 function removePost(postid) {
     request('DELETE', '/delete/' + postid + '/', function () {
+        console.log(postid);
         document.location.reload();
     }, function () {
+        console.log(postid);
         alert('Ошибка удаления');
     });
 }
