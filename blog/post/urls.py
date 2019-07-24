@@ -28,6 +28,9 @@ urlpatterns = [
         ),
     url(r'^my/$', views.PostMyView.as_view(),
         name='view_my'
+        ),
+    url(r'^user-posts/(?P<userid>\d+)/$', views.PostUserView.as_view(),
+        name='view_user'
         )
 
 ]

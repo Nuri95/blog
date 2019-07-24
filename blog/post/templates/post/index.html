@@ -3,15 +3,16 @@
 
 <div class="mt-3">
     {% for post in posts %}
+
     <div class="row">
         <div class="col-md-5">
             <div class="row no-gutters border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
                 <div class="col p-4 d-flex flex-column position-static">
-                    <strong class="d-inline-block mb-2 text-primary">{{ post.user }}</strong>
+                    <a href="{% url 'view_user' post.user_id %}" class="d-inline-block mb-2 text-primary">{{ post.user }}</a>
                     <h3 class="mb-0">{{ post.title }}</h3>
                     <div class="mb-1 text-muted">{{ post.date|date:"d E Y f" }}</div>
                     <p class="card-text mb-auto">
-                        Здесь будет начало поста.
+                        {{ post.body|slice:":100" }}
                     </p>
                     <div class="mt-3">
                         <a href="{% url 'view_post' post.id %}" class="">Прочитать</a>

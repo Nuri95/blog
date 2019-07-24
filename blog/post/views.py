@@ -38,6 +38,7 @@ class IndexView(TemplateView):
         except EmptyPage:
             posts = []
 
+        # models = [ShortPostModel(post) for post in posts]
         context = super(IndexView, self).get_context_data(**kwargs)
         context['count'] = paginator.count
         context['page_size'] = 10
@@ -63,11 +64,34 @@ class IndexView(TemplateView):
         return super(IndexView, self).dispatch(request, *args, **kwargs)
 
 
+# class ShortPostModel:
+#     def __init__(self, post):
+#         self.id = post.id
+#         self.date = post.date
+#         self.title = post.title
+#         self.user = post.user
+#         self.body = post.body[:100]
+
+
 class PostMyView(IndexView):
     template_name = 'post/index.html'
 
     def get_context_data(self, **kwargs):
         return self.test(kwargs, True)
+
+
+class PostUserView(TemplateView):
+    template_name = 'post/index.html'
+
+    def get_context_data(self, **kwargs):
+        posts = Post.objects.all()
+        userid = kwargs['userid']
+        if userid:
+            posts = posts.filter(user_id=userid)
+        context = super(PostUserView, self).get_context_data(**kwargs)
+        context['posts'] = posts
+
+        return context
 
 
 class PostView(TemplateView):
