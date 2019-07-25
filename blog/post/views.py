@@ -73,6 +73,15 @@ class IndexView(TemplateView):
 #         self.body = post.body[:100]
 
 
+class PostLikeView(View):
+    def post(self, request, *args, **kwargs):
+        print request
+        print args
+        print kwargs
+        return HttpResponse()
+
+
+
 class PostMyView(IndexView):
     template_name = 'post/index.html'
 

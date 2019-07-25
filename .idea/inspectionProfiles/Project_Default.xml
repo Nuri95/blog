@@ -5,6 +5,8 @@
       <option name="ignoredIdentifiers">
         <list>
           <option value="post.views.PostCreateView.Post" />
+          <option value="post.Post" />
+          <option value="post.models.*" />
         </list>
       </option>
     </inspection_tool>

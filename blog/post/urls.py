@@ -31,6 +31,8 @@ urlpatterns = [
         ),
     url(r'^user-posts/(?P<userid>\d+)/$', views.PostUserView.as_view(),
         name='view_user'
-        )
+        ),
+    url(r'^like/(?P<postid>\d+)/$', views.PostLikeView.as_view(),
+        name='view_like_post')
 
 ]

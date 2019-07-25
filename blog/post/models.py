@@ -10,6 +10,8 @@ class Post(models.Model):
     body = models.TextField()
     date = models.DateTimeField()
     user = models.ForeignKey(User)
+    likes = models.ManyToManyField(User, blank=True, related_name='likes')
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.title
+

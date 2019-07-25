@@ -1,26 +1,24 @@
 function request(type, url, successCallback, failCallback) {
-    var x = new XMLHttpRequest();
+    var request = new XMLHttpRequest();
 
-    x.open(type, url, true);
-    x.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+    request.open(type, url, true);
+    request.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
 
-    x.onreadystatechange = function () {
-        if (x.readyState !== 4)
+    request.onreadystatechange = function () {
+        if (request.readyState !== 4)
             return;
-        if (x.status !== 200)
+        if (request.status !== 200)
             failCallback();
         else
             successCallback();
     };
-    x.send();
+    request.send();
 }
 
 function removePost(postid) {
     request('DELETE', '/delete/' + postid + '/', function () {
-        console.log(postid);
         document.location.reload();
     }, function () {
-        console.log(postid);
         alert('Ошибка удаления');
     });
 }
@@ -46,4 +44,18 @@ function getCookie(name) {
         }
     }
     return cookieValue;
+}
+function like(id) {
+    console.log(id);
+    $.ajax({
+        type:"POST",
+        url: 'http://127.0.0.1:8000/like/'+id+'/',
+        success: function (response) {
+            console.log(response)
+        },
+        error: function (a, b, c) {
+            console.log(a, b, c)
+        }
+
+    });
 }

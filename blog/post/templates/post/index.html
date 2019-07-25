@@ -12,10 +12,16 @@
                     <h3 class="mb-0">{{ post.title }}</h3>
                     <div class="mb-1 text-muted">{{ post.date|date:"d E Y f" }}</div>
                     <p class="card-text mb-auto">
-                        {{ post.body|slice:":100" }}
+                        {{ post.body|slice:":100" }}обновленную
                     </p>
                     <div class="mt-3">
                         <a href="{% url 'view_post' post.id %}" class="">Прочитать</a>
+                        <button id="likes" data-catid="{{post.id}}" class="btn btn-primary" type="button">
+                            Like
+                        </button>
+{#                        <button class="like" data-catid="{{ post.id }}" type="button">#}
+{#                            <i class="fa fa-heart-o" aria-hidden="true"></i>#}
+{#                        </button>#}
                         {% if post.user == user %}
                         <a href="#" class="float-right ml-3 text-danger show-alert" data-id="{{ post.id }}">Удалить</a>
                         <a href="{% url 'view_edit' post.id %}" class="float-right">Редактировать</a>
@@ -64,7 +70,14 @@
             });
             return false;
         });
-    });
+        $('#likes').on('click', function () {
+            var $this = $(this);
+            like($this.data('catid'));
+
+        })
+
+        
+    })
 </script>
 
 {% endblock %}

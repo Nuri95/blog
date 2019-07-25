@@ -37,3 +37,17 @@ form{
 .nav-link.active {
     text-decoration: underline;
 }
+.like{
+    border: none;
+    background: 0 0;
+}
+
+
+/*button.like:active [class^="icon-"]::before, button.like:active [class*=" icon-"]::before {*/
+    /*color: red;*/
+/*}*/
+
+button.like:active .fa-heart-o::before {
+    content: "\f004";
+    color: red;
+}
