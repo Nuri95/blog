@@ -45,17 +45,49 @@ function getCookie(name) {
     }
     return cookieValue;
 }
-function like(id) {
-    console.log(id);
-    $.ajax({
-        type:"POST",
-        url: 'http://127.0.0.1:8000/like/'+id+'/',
-        success: function (response) {
-            console.log(response)
-        },
-        error: function (a, b, c) {
-            console.log(a, b, c)
-        }
 
+$.ajaxSetup({
+     beforeSend: function(xhr) {
+         xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+     }
+});
+//
+// function like(id) {
+//     $.ajax({
+//         type:"POST",
+//         url: 'http://127.0.0.1:8000/like/' + id + '/',
+//
+//         success: function (response) {
+//             $('#like-count-' + id).text(response.totalLikes);
+//             var $btn = $('#like-' + id);
+//             $btn.siblings('.count_like').text(response.totalLikes);
+//             if (response.isLiked){
+//                 $btn.addClass('liked');
+//             } else {
+//                 $btn.removeClass('liked');
+//             }
+//
+//         },
+//         error: function (a, b, c) {
+//             console.log(a, b, c)
+//         }
+//
+//     })
+// }
+
+$(function() {
+    $('.like').click(function() {
+        var $this = $(this);
+        var id = $this.data('id');
+
+        $.post('/like/' + id + '/', function(response) {
+            $('#like-count-' + id).text(response.totalLikes);
+
+            if (response.isLiked) {
+                $this.addClass('liked');
+            } else {
+                $this.removeClass('liked');
+            }
+        });
     });
-}
+});

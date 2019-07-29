@@ -1,4 +1,6 @@
 from django.conf.urls import url
+from django.contrib.auth.decorators import login_required
+
 from . import views
 
 urlpatterns = [
@@ -32,7 +34,10 @@ urlpatterns = [
     url(r'^user-posts/(?P<userid>\d+)/$', views.PostUserView.as_view(),
         name='view_user'
         ),
-    url(r'^like/(?P<postid>\d+)/$', views.PostLikeView.as_view(),
-        name='view_like_post')
+    url(r'^like/(?P<postid>\d+)/$', login_required(views.PostLikeView.as_view()),
+        name='view_like_post'),
+    url(r'^best/$', views.PostBestView.as_view(),
+        name='view_best'
+        ),
 
 ]

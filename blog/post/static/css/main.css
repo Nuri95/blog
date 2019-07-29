@@ -41,7 +41,9 @@ form{
     border: none;
     background: 0 0;
 }
-
+.liked > .fa-heart{
+    color: red;
+}
 
 /*button.like:active [class^="icon-"]::before, button.like:active [class*=" icon-"]::before {*/
     /*color: red;*/
@@ -50,4 +52,8 @@ form{
 button.like:active .fa-heart-o::before {
     content: "\f004";
     color: red;
+}
+
+button.like {
+    padding-left: 0;
 }

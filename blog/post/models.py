@@ -11,7 +11,14 @@ class Post(models.Model):
     date = models.DateTimeField()
     user = models.ForeignKey(User)
     likes = models.ManyToManyField(User, blank=True, related_name='likes')
+    # abc = models.ManyToOneRel()
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.title
 
+    @property
+    def total_likes(self):
+        return self.likes.count()
+
+    def is_liked_by(self, user):
+        return self.likes.filter(id=user.id).exists()

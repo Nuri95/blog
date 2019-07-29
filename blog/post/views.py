@@ -4,10 +4,12 @@ from __future__ import unicode_literals
 from django.contrib.auth import authenticate, login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.http import HttpResponse, Http404
+from django.db.models import Count
+from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import redirect, get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, resolve
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
@@ -17,16 +19,20 @@ from forms import PostForm, LoginForm
 from models import Post
 
 
+
 class IndexView(TemplateView):
     template_name = 'post/index.html'
 
-    def test(self, kwargs, post_filter=False):
+    def attach_filter(self, posts, **kwargs):
+        return posts
+
+    def attach_sort(self, posts, **kwargs):
+        return posts.order_by('-date')
+
+    def get_context_data(self, **kwargs):
         posts = Post.objects.all()
-
-        if post_filter:
-            posts = posts.filter(user=self.request.user)
-
-        posts = posts.order_by('-date')
+        posts = self.attach_filter(posts, **kwargs)
+        posts = self.attach_sort(posts, **kwargs)
         paginator = Paginator(posts, 10)
 
         try:
@@ -38,13 +44,18 @@ class IndexView(TemplateView):
         except EmptyPage:
             posts = []
 
+        for post in posts:
+            post.is_liked = post.is_liked_by(self.request.user)
+
         # models = [ShortPostModel(post) for post in posts]
         context = super(IndexView, self).get_context_data(**kwargs)
+        print 'context= ', context
         context['count'] = paginator.count
         context['page_size'] = 10
         context['page_number'] = int(page_number)
         context['page_previous'] = int(page_number) - 1
         context['posts'] = posts
+        context['url_name']=self.request.path #resolve(self.request.path).url_name
 
         if context['page_size'] * context['page_number'] < context['count']:
             context['page_next'] = int(page_number) + 1
@@ -53,8 +64,6 @@ class IndexView(TemplateView):
 
         return context
 
-    def get_context_data(self, **kwargs):
-        return self.test(kwargs)
 
     def dispatch(self, request, *args, **kwargs):
 
@@ -74,33 +83,51 @@ class IndexView(TemplateView):
 
 
 class PostLikeView(View):
-    def post(self, request, *args, **kwargs):
-        print request
-        print args
-        print kwargs
-        return HttpResponse()
 
+    def post(self, request, *args, **kwargs):
+        postid = kwargs['postid']
+        user = request.user
+        post = get_object_or_404(Post, id=postid)
+
+        if post.likes.filter(id=request.user.id):
+            post.likes.remove(user)
+            is_liked = False
+        else:
+            post.likes.add(user)
+            is_liked = True
+
+        post.save()
+
+        context = {
+            'postId': postid,
+            'isLiked': is_liked,
+            'totalLikes': post.total_likes
+        }
+        return JsonResponse(context)
+
+
+class PostBestView(IndexView):
+    def attach_sort(self, posts, **kwargs):
+        return posts.annotate(like_count=Count('likes')).order_by('-like_count')
 
 
 class PostMyView(IndexView):
     template_name = 'post/index.html'
 
-    def get_context_data(self, **kwargs):
-        return self.test(kwargs, True)
+    def attach_filter(self, posts, **kwargs):
+        return posts.filter(user=self.request.user)
 
 
-class PostUserView(TemplateView):
+class PostUserView(IndexView):
     template_name = 'post/index.html'
 
-    def get_context_data(self, **kwargs):
-        posts = Post.objects.all()
-        userid = kwargs['userid']
-        if userid:
-            posts = posts.filter(user_id=userid)
-        context = super(PostUserView, self).get_context_data(**kwargs)
-        context['posts'] = posts
+    def attach_filter(self, posts, **kwargs):
+        return posts.filter(user=kwargs['user'])
 
-        return context
+    def get_context_data(self, **kwargs):
+        userid = kwargs['userid']
+        kwargs['user'] = get_object_or_404(User, id=userid)
+        return super(PostUserView, self).get_context_data(**kwargs)
 
 
 class PostView(TemplateView):
@@ -213,6 +240,7 @@ class PostCreateView(FormView):
         if not self.request.user.is_authenticated():
             return redirect(reverse('view_login'))
         return super(PostCreateView, self).dispatch(request, *args, **kwargs)
+        return context
 
     def form_valid(self, form):
         form.save()
