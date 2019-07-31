@@ -29,13 +29,20 @@
                                 {% endwith %}
                             </span>
                         </button>
+                        <a href="{% url 'view_post' post.id %}" class="count-comment" >
+                            <i class="fa fa-comments" aria-hidden="true"></i>
+                            <span id="comment-count-{{ post.id }}">
+                                {% with total_comment=post.total_comment %}
+                                    {{ total_comment }}
+                                {% endwith %}
+                            </span>
+                        </a>
 
                         {% if post.user == user %}
                             <a href="#" class="float-right ml-3 text-danger show-alert" data-id="{{ post.id }}">Удалить</a>
                             <a href="{% url 'view_edit' post.id %}" class="float-right">Редактировать</a>
                         {% endif %}
                     </div>
-
                 </div>
 
             </div>

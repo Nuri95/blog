@@ -22,3 +22,32 @@ class Post(models.Model):
 
     def is_liked_by(self, user):
         return self.likes.filter(id=user.id).exists()
+
+    @property
+    def comments(self):
+        return self.comment_set.order_by('-date')
+
+    @property
+    def total_comment(self):
+        return self.comments.count()
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post)
+    body = models.TextField()
+    date = models.DateTimeField()
+    user = models.ForeignKey(User)
+
+    def __unicode__(self):
+        return self.body
+
+    def as_json(self):
+        return {
+            'postId': self.post.id,
+            'body': self.body,
+            'date': self.date,
+            'author': {
+                'id': self.user.id,
+                'username': self.user.username
+            }
+        }

@@ -74,6 +74,9 @@ $.ajaxSetup({
 //
 //     })
 // }
+//             $('#comments').append('<div>'+response.body+' '+response.user  +' ' + response.date+'</div>');
+
+
 
 $(function() {
     $('.like').click(function() {
@@ -89,5 +92,29 @@ $(function() {
                 $this.removeClass('liked');
             }
         });
+    });
+    
+    $('.form-comment').submit(function () {
+        var $this = $(this);
+        var postId = $this.data('post');
+        var body = $('#comment-body').val();
+
+        $('#comment-body').val('');
+
+        $.post('/comment/new/', { post_id: postId, body: body }, function (r) {
+            console.log(r);
+            $('#comments').prepend(
+                $([
+                    '<div class="post-comment">',
+                    '   <div class="comment-author">',
+                    '       <a href="/user-posts/' + r.author.id + '/">' + r.author.username + '</a>',
+                    '   </div>',
+                    '   <div class="comment-body">' + r.body + '</div>',
+                    '   <div class="comment-time">' + r.date + '</div>',
+                    '</div>'
+                ].join('\n'))
+            );
+        });
+        return false;
     });
 });

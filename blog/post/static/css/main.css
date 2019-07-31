@@ -25,11 +25,11 @@
 form{
     width: 100%;
 }
-.post-body {
-    white-space: pre;
+.post-body, .comment-body {
+    white-space: pre-wrap;
 }
 
-.post-info {
+.post-info, .post-comment .comment-time {
     color: #999;
     font-size: 14px;
 }
@@ -44,10 +44,14 @@ form{
 .liked > .fa-heart{
     color: red;
 }
-
-/*button.like:active [class^="icon-"]::before, button.like:active [class*=" icon-"]::before {*/
-    /*color: red;*/
-/*}*/
+a.count-comment{
+    color: inherit;
+    text-decoration: none;
+}
+a.count-comment:hover {
+    color:inherit;
+    text-decoration: none;
+}
 
 button.like:active .fa-heart-o::before {
     content: "\f004";
@@ -57,3 +61,8 @@ button.like:active .fa-heart-o::before {
 button.like {
     padding-left: 0;
 }
+
+.post-comment {
+    margin-bottom: 20px;
+}
+

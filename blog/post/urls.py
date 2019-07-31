@@ -36,6 +36,8 @@ urlpatterns = [
         ),
     url(r'^like/(?P<postid>\d+)/$', login_required(views.PostLikeView.as_view()),
         name='view_like_post'),
+    url(r'^comment/new/$', views.PostCommentView.as_view(),
+        name='view_comment_post'),
     url(r'^best/$', views.PostBestView.as_view(),
         name='view_best'
         ),

@@ -9,15 +9,14 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Count
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import redirect, get_object_or_404
-from django.urls import reverse, resolve
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import TemplateView, FormView, DeleteView
 
-from forms import PostForm, LoginForm
-from models import Post
-
+from forms import PostForm, LoginForm, CommentForm
+from models import Post, Comment
 
 
 class IndexView(TemplateView):
@@ -106,6 +105,42 @@ class PostLikeView(View):
         return JsonResponse(context)
 
 
+class PostCommentView(FormView):
+    form_class = CommentForm
+
+    def dispatch(self, request, *args, **kwargs):
+        self.date = timezone.now()
+        self.body = request.POST.get('body')
+        try:
+            self.post_object = Post.objects.get(id=request.POST.get('post_id'))
+            print self.post_object
+        except Post.DoesNotExist:
+            raise Http404
+
+        return super(PostCommentView, self).dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        saved_comment = form.save()
+        return JsonResponse(saved_comment.as_json())
+
+    def get_form_kwargs(self):
+        new_comment = super(PostCommentView, self).get_form_kwargs()
+        new_comment['instance'] = Comment(date=self.date,
+                                          user=self.request.user,
+                                          post=self.post_object)
+        return new_comment
+
+
+class PostView(TemplateView):
+    template_name = 'post/post.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(PostView, self).get_context_data(**kwargs)
+        context['post'] = get_object_or_404(Post, id=kwargs['postid'])
+
+        return context
+
+
 class PostBestView(IndexView):
     def attach_sort(self, posts, **kwargs):
         return posts.annotate(like_count=Count('likes')).order_by('-like_count')
@@ -128,16 +163,6 @@ class PostUserView(IndexView):
         userid = kwargs['userid']
         kwargs['user'] = get_object_or_404(User, id=userid)
         return super(PostUserView, self).get_context_data(**kwargs)
-
-
-class PostView(TemplateView):
-    template_name = 'post/post.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(PostView, self).get_context_data(**kwargs)
-        context['post'] = get_object_or_404(Post, id=kwargs['postid'])
-
-        return context
 
 
 class PostDeleteView(DeleteView):
@@ -240,7 +265,6 @@ class PostCreateView(FormView):
         if not self.request.user.is_authenticated():
             return redirect(reverse('view_login'))
         return super(PostCreateView, self).dispatch(request, *args, **kwargs)
-        return context
 
     def form_valid(self, form):
         form.save()
