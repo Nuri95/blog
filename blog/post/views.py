@@ -72,14 +72,6 @@ class IndexView(TemplateView):
         return super(IndexView, self).dispatch(request, *args, **kwargs)
 
 
-# class ShortPostModel:
-#     def __init__(self, post):
-#         self.id = post.id
-#         self.date = post.date
-#         self.title = post.title
-#         self.user = post.user
-#         self.body = post.body[:100]
-
 
 class PostLikeView(View):
 
