@@ -59,31 +59,6 @@ $.ajaxSetup({
          xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
      }
 });
-//
-// function like(id) {
-//     $.ajax({
-//         type:"POST",
-//         url: 'http://127.0.0.1:8000/like/' + id + '/',
-//
-//         success: function (response) {
-//             $('#like-count-' + id).text(response.totalLikes);
-//             var $btn = $('#like-' + id);
-//             $btn.siblings('.count_like').text(response.totalLikes);
-//             if (response.isLiked){
-//                 $btn.addClass('liked');
-//             } else {
-//                 $btn.removeClass('liked');
-//             }
-//
-//         },
-//         error: function (a, b, c) {
-//             console.log(a, b, c)
-//         }
-//
-//     })
-// }
-//             $('#comments').append('<div>'+response.body+' '+response.user  +' ' + response.date+'</div>');
-
 
 
 $(function() {
