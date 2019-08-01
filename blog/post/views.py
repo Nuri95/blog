@@ -177,6 +177,11 @@ class PostDeleteView(DeleteView):
             raise Http404()
 
 
+class PostCommentDeleteView(PostDeleteView):
+    model = Comment
+    pk_url_kwarg = 'commentid'
+
+
 class LoginView(FormView):
     template_name = 'post/login.html'
     form_class = LoginForm

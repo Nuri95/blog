@@ -41,6 +41,10 @@
             </div>
             <div class="comment-body">{{ comment.body }}</div>
             <div class="comment-time">{{ comment.date }}</div>
+            {% if comment.user == user %}
+                <a href="#" class="float-right ml-3 text-danger form-comment-delete" data-id="{{ comment.id }}">Удалить</a>
+
+            {% endif %}
         </div>
     {% endfor %}
     </div>

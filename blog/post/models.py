@@ -51,3 +51,8 @@ class Comment(models.Model):
                 'username': self.user.username
             }
         }
+    #
+    # @property
+    # def date_formatted(self):
+    #     return self.date.strftime("%d %b %Y %H:%M")
+

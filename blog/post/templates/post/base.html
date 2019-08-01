@@ -58,22 +58,23 @@
 <script src="{% static 'js/main.js' %}"></script>
 
 <script>
-    $(document).ready(function () {
-        $('.show-alert').on('click', function () {
-            var $this = $(this);
-            bootbox.confirm("Вы хотите удалить?", function (result) {
-                if (result) {
-                    removePost($this.data('id'));
-                    return false;
-                }
-            });
-            return false;
-        });
-
-        //$('.js-like').on('click', function () {
-        //    var $this = $(this);
-        //    like($this.data('catid'));
-        //});
+    // $(document).ready(function () {
+    //     $('.show-alert').on('click', function () {
+    //         var $this = $(this);
+    //         bootbox.confirm("Вы хотите удалить?", function (result) {
+    //             if (result) {
+    //                 removePost($this.data('id'));
+    //                 return false;
+    //             }
+    //         });
+    //         return false;
+    //     });
+    //     $('.form-comment-delete').on('click', function () {
+    //         var $this = $(this);
+    //         removeComment($this.data('id'));
+    //         return false;
+    //
+    //     })
 
     })
 </script>

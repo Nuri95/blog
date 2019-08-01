@@ -107,13 +107,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'Asia/Yekaterinburg'
 
-USE_I18N = True
-
-USE_L10N = True
+DATETIME_FORMAT = "d b Y H:"
 
 USE_TZ = True
 
@@ -124,5 +120,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 LOGIN_URL = '/post/login'
+
+USE_I18N = True
+USE_L10N = False
 
 LANGUAGE_CODE = 'ru-RU'

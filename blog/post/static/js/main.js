@@ -16,11 +16,19 @@ function request(type, url, successCallback, failCallback) {
 }
 
 function removePost(postid) {
-    request('DELETE', '/delete/' + postid + '/', function () {
+    request('DELETE', '/post/' + postid + '/delete/', function () {
         document.location.reload();
     }, function () {
         alert('Ошибка удаления');
     });
+}
+function removeComment(commentid) {
+    request('DELETE', '/comment/'+commentid + '/delete/', function () {
+        document.location.reload();
+    }, function () {
+        alert('Ошибка удаления');
+    });
+
 }
 
 function logout() {
@@ -79,6 +87,24 @@ $.ajaxSetup({
 
 
 $(function() {
+    $('.show-alert').click(function () {
+       var $this = $(this);
+            bootbox.confirm("Вы хотите удалить?", function (result) {
+
+                if (result) {
+                    removePost($this.data('id'));
+                    return false;
+                }
+            });
+            return false;
+    });
+
+    $('.form-comment-delete').click(function () {
+        var $this = $(this);
+        removeComment($this.data('id'));
+        return false;
+    });
+
     $('.like').click(function() {
         var $this = $(this);
         var id = $this.data('id');
