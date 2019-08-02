@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from datetime import datetime
+
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import dateformat
 
 
 class Post(models.Model):
@@ -11,7 +15,6 @@ class Post(models.Model):
     date = models.DateTimeField()
     user = models.ForeignKey(User)
     likes = models.ManyToManyField(User, blank=True, related_name='likes')
-    # abc = models.ManyToOneRel()
 
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.title
@@ -43,6 +46,7 @@ class Comment(models.Model):
 
     def as_json(self):
         return {
+            'id': self.id,
             'postId': self.post.id,
             'body': self.body,
             'date': self.date,
@@ -51,8 +55,6 @@ class Comment(models.Model):
                 'username': self.user.username
             }
         }
-    #
-    # @property
-    # def date_formatted(self):
-    #     return self.date.strftime("%d %b %Y %H:%M")
 
+    def formatted_date(self):
+        return dateformat.format(datetime.now(), settings.DATETIME_FORMAT)

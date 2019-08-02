@@ -109,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 TIME_ZONE = 'Asia/Yekaterinburg'
 
-DATETIME_FORMAT = "d b Y H:"
+DATETIME_FORMAT = "g E Y H:i"
 
 USE_TZ = True
 
@@ -122,6 +122,6 @@ STATIC_URL = '/static/'
 LOGIN_URL = '/post/login'
 
 USE_I18N = True
-USE_L10N = False
+USE_L10N = True
 
 LANGUAGE_CODE = 'ru-RU'

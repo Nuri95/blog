@@ -103,17 +103,25 @@ class PostCommentView(FormView):
     def dispatch(self, request, *args, **kwargs):
         self.date = timezone.now()
         self.body = request.POST.get('body')
+
         try:
             self.post_object = Post.objects.get(id=request.POST.get('post_id'))
-            print self.post_object
         except Post.DoesNotExist:
             raise Http404
 
         return super(PostCommentView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        saved_comment = form.save()
-        return JsonResponse(saved_comment.as_json())
+        # saved_comment = form.save()
+        # saved_comment= saved_comment.as_json()
+        # .formatted_date()
+        comment = form.save()
+        # print 'comment=', comment
+        json = comment.as_json()
+        # print 'json= ', json
+        json['date'] = comment.formatted_date()
+        # print 'json2= ', json
+        return JsonResponse(json)
 
     def get_form_kwargs(self):
         new_comment = super(PostCommentView, self).get_form_kwargs()

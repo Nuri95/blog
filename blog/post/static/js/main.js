@@ -74,7 +74,7 @@ $(function() {
             return false;
     });
 
-    $('.form-comment-delete').click(function () {
+    $(document).on('click', '.form-comment-delete', function () {
         var $this = $(this);
         removeComment($this.data('id'));
         return false;
@@ -112,6 +112,7 @@ $(function() {
                     '   </div>',
                     '   <div class="comment-body">' + r.body + '</div>',
                     '   <div class="comment-time">' + r.date + '</div>',
+                    '   <a href="#" class="form-comment-delete" data-id="'+r.id+'">Удалить</a>',
                     '</div>'
                 ].join('\n'))
             );
