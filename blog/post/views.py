@@ -29,9 +29,10 @@ class IndexView(TemplateView):
         return posts.order_by('-date')
 
     def get_context_data(self, **kwargs):
-        # posts = Post.objects.all()
-        # print posts
+        posts = Post.objects.all()
+        print posts.query
         posts = Post.objects.annotate(number_of_comments=Count('comment'))
+        print posts.query
         print 'posts= ', posts
         posts = self.attach_filter(posts, **kwargs)
         posts = self.attach_sort(posts, **kwargs)
