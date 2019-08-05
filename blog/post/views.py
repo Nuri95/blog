@@ -16,7 +16,7 @@ from django.views import View
 from django.views.generic import TemplateView, FormView, DeleteView
 
 from forms import PostForm, LoginForm, CommentForm
-from models import Post, Comment
+from models import Post, Comment, get_formatted_date
 
 
 class IndexView(TemplateView):
@@ -101,9 +101,6 @@ class PostCommentView(FormView):
     form_class = CommentForm
 
     def dispatch(self, request, *args, **kwargs):
-        self.date = timezone.now()
-        self.body = request.POST.get('body')
-
         try:
             self.post_object = Post.objects.get(id=request.POST.get('post_id'))
         except Post.DoesNotExist:
@@ -112,20 +109,11 @@ class PostCommentView(FormView):
         return super(PostCommentView, self).dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        # saved_comment = form.save()
-        # saved_comment= saved_comment.as_json()
-        # .formatted_date()
-        comment = form.save()
-        # print 'comment=', comment
-        json = comment.as_json()
-        # print 'json= ', json
-        json['date'] = comment.formatted_date()
-        # print 'json2= ', json
-        return JsonResponse(json)
+        return JsonResponse(form.save().as_json())
 
     def get_form_kwargs(self):
         new_comment = super(PostCommentView, self).get_form_kwargs()
-        new_comment['instance'] = Comment(date=self.date,
+        new_comment['instance'] = Comment(date=timezone.now(),
                                           user=self.request.user,
                                           post=self.post_object)
         return new_comment
@@ -137,7 +125,7 @@ class PostView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(PostView, self).get_context_data(**kwargs)
         context['post'] = get_object_or_404(Post, id=kwargs['postid'])
-
+        # context['blabla'] = get_formatted_date(context['post'].date)
         return context
 
 

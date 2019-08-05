@@ -22,6 +22,7 @@ function removePost(postid) {
         alert('Ошибка удаления');
     });
 }
+
 function removeComment(commentid) {
     request('DELETE', '/comment/'+commentid + '/delete/', function () {
         document.location.reload();
@@ -56,13 +57,13 @@ function getCookie(name) {
 
 $.ajaxSetup({
      beforeSend: function(xhr) {
+         console.log(xhr);
          xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
      }
 });
 
-
-$(function() {
-    $('.show-alert').click(function () {
+function attachPostDelete() {
+    $('.remove-post').click(function () {
        var $this = $(this);
             bootbox.confirm("Вы хотите удалить?", function (result) {
 
@@ -73,14 +74,19 @@ $(function() {
             });
             return false;
     });
+}
 
-    $(document).on('click', '.form-comment-delete', function () {
+
+function attachCommentDelete($container) {
+    $container.find('.comments').on('click', '.form-comment-delete', function () {
         var $this = $(this);
         removeComment($this.data('id'));
         return false;
     });
+}
 
-    $('.like').click(function() {
+function attachLike($container) {
+      $container.find('.like').click(function() {
         var $this = $(this);
         var id = $this.data('id');
 
@@ -94,29 +100,83 @@ $(function() {
             }
         });
     });
-    
-    $('.form-comment').submit(function () {
+}
+
+function attachComment($container) {
+    $container.find('.form-comment').submit(function () {
         var $this = $(this);
         var postId = $this.data('post');
-        var body = $('#comment-body').val();
+        var body = $this.find('.comment-body').val();
 
-        $('#comment-body').val('');
-
-        $.post('/comment/new/', { post_id: postId, body: body }, function (r) {
+        $.post('/comment/new/', {post_id: postId, body: body}, function (r) {
             console.log(r);
-            $('#comments').prepend(
-                $([
+            $container.find('.comments').prepend(
+                [
                     '<div class="post-comment">',
-                    '   <div class="comment-author">',
-                    '       <a href="/user-posts/' + r.author.id + '/">' + r.author.username + '</a>',
+                    '   <div class="row">',
+                    '       <div class="comment-author col">',
+                    '           <a href="/user-posts/' + r.author.id + '/">' + r.author.username + '</a>',
+                    '       </div>',
+                    '       <div class="comment-time col">' + r.date + '</div>',
+                    '       <div class="col">',
+                    '           <a href="#" class="form-comment-delete" data-id="' + r.id + '">Удалить</a>',
+                    '       </div>',
                     '   </div>',
-                    '   <div class="comment-body">' + r.body + '</div>',
-                    '   <div class="comment-time">' + r.date + '</div>',
-                    '   <a href="#" class="form-comment-delete" data-id="'+r.id+'">Удалить</a>',
+                    '   <div class="row">',
+                    '       <div class="comment-body col">' + r.body + '</div>',
+                    '   </div>',
                     '</div>'
-                ].join('\n'))
+                ].join('\n')
             );
+            $this.find('.comment-body').val('');
         });
         return false;
     });
-});
+}
+
+function PostView($container) {
+    attachCommentDelete($container);
+    attachLike($container);
+    attachComment($container);
+
+}
+function getRecent() {
+    var encoded_posts;
+    if (encoded_posts = localStorage.getItem('posts')){
+        try {
+            return JSON.parse(encoded_posts);
+        }catch (e) {
+            return [];
+        }
+    }else {
+        return [];
+    }
+}
+
+function rememberPost(post_id, title) {
+     var posts = getRecent();
+     var alreadyExists = $.map(posts, function (post, index) {
+         if (post_id === post.id)
+             return index;
+     });
+     if (alreadyExists.length){
+         posts.splice(alreadyExists[0], 1);
+     }
+     posts.push({"id":post_id, "title": title});
+     if (posts.length > 10){
+         posts.shift();
+     }
+     localStorage.setItem('posts', JSON.stringify(posts));
+
+}
+function drawRecentPosts($container) {
+    $container.html(
+        $.map(getRecent().reverse(), function (post) {
+              return '<li class="nav-item ">'+
+                  '<a class="nav-link" href="/post/'+post.id+'/">'+post.title+
+                  '</a>'+
+              '</li>';
+        }).join(' ')
+    );
+}
+

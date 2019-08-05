@@ -49,7 +49,7 @@ class Comment(models.Model):
             'id': self.id,
             'postId': self.post.id,
             'body': self.body,
-            'date': self.date,
+            'date': dateformat.format(self.date, settings.DATETIME_FORMAT),
             'author': {
                 'id': self.user.id,
                 'username': self.user.username
@@ -57,4 +57,8 @@ class Comment(models.Model):
         }
 
     def formatted_date(self):
-        return dateformat.format(datetime.now(), settings.DATETIME_FORMAT)
+        return dateformat.format(self.date, settings.DATETIME_FORMAT)
+
+
+def get_formatted_date(date):
+    return dateformat.format(date, settings.DATETIME_FORMAT)

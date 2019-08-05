@@ -1,58 +1,85 @@
 {% extends 'post/base.html' %}
 {% block content %}
-
-<div class="row mt-3">
-    <div class="col-sm-7">
-        <div class="post-header">
-            <h1>{{ post.title }}</h1>
-        </div>
-        <div class="post-info">
-            {{ post.date }}, автор: {{ post.user }}
-        </div>
-        {% if post.user == user %}
-        <div class="mt-3">
-            <a href="{% url 'view_edit' post.id %}" class="mr-3">Редактировать</a>
-        </div>
-        {% endif %}
-        <div class="post-body mt-4">{{ post.body }}</div>
-    </div>
-</div>
-
-<div class="row mt-4">
-    <div class="col-12">
-        <h5>Комментарии</h5>
-    </div>
-    <div class="col-4">
-        <form method="post" class="form-comment" data-post="{{ post.id }}">
-            {% csrf_token %}
-            <div class="form-group">
-                <textarea id="comment-body" class="form-control" placeholder="Ваш комментарий"></textarea>
+<div id="post_view_1">
+    <div class="row mt-3">
+        <div class="col-sm-7">
+            <div class="post-header">
+                <h1>{{ post.title }}</h1>
             </div>
-            <button type="submit" class="btn btn-primary">Отправить</button>
-        </form>
+            <div class="post-info">
+                {{ post.date }}, автор: {{ post.user }}
+            </div>
+            {% if post.user == user %}
+            <div class="mt-3">
+                <a href="{% url 'view_edit' post.id %}" class="mr-3">Редактировать</a>
+            </div>
+            {% endif %}
+            <div class="post-body mt-4">{{ post.body }}</div>
+        </div>
     </div>
-</div>
-<div class="row mt-3">
-    <div id="comments" class="col-7">
-    {% for comment in post.comments %}
-        <div class="post-comment">
-            <div class="comment-info">
-                <div class="comment-author">
-                    <a href="{% url 'view_user' comment.user.id %}">{{ comment.user.username }}</a>
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <h5>Комментарии</h5>
+        </div>
+        <div class="col-4">
+
+            <form method="post" class="form-comment" data-post="{{ post.id }}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <textarea class="form-control comment-body" placeholder="Ваш комментарий"></textarea>
                 </div>
-                <div class="comment-body">{{ comment.body }}</div>
-                <div class="comment-time">{{ comment.date }}</div>
-            </div>
-            <div class="comment-del-info">
-                {% if comment.user == user %}
-                    <a href="#" class="form-comment-delete" data-id="{{ comment.id }}">Удалить</a>
-                {% endif %}
-            </div>
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </form>
+
         </div>
-    {% endfor %}
+    </div>
+    <div class="row mt-3">
+        <div class="col-7 comments">
+
+            {% for comment in post.comments %}
+            <div class="post-comment">
+                <div class="row">
+                    <div class="comment-author col-3">
+                        <a href="{% url 'view_user' comment.user.id %}">{{ comment.user.username }}</a>
+                    </div>
+                    <div class="comment-time col-4">{{ comment.date }}</div>
+                    <div class="offset-3 col-2">
+                        {% if comment.user == user %}
+                        <a href="#" class="form-comment-delete" data-id="{{ comment.id }}">Удалить</a>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="comment-body col">{{ comment.body }}</div>
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+
     </div>
 </div>
+</div>
+{% endblock %}
 
+{% block add_script %}
+
+<script>
+
+    $(document).ready(function () {
+        PostView($('#post_view_1'));
+        rememberPost({;
+        {
+            post.id
+        }
+    },
+        '{{ post.title }}';
+    )
+    })
+
+</script>
 
 {% endblock %}
 

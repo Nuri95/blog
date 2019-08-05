@@ -2,7 +2,7 @@
 {% extends 'post/base.html' %}
 {% block content %}
 
-<div class="mt-3">
+<div class="mt-3 index-posts">
     {% for post in posts %}
     <div class="row">
         <div class="col-md-5">
@@ -11,10 +11,10 @@
                     <a href="{% url 'view_user' post.user_id %}" class="d-inline-block mb-2 text-primary">{{ post.user }}</a>
 
                     <a href="{% url 'view_post' post.id %}" class="">
-                        <h3 class="mb-0">{{ post.title }}</h3>
+                        <h3 class="mb-0 local-save">{{ post.title }}</h3>
                     </a>
 
-                    <div class="mb-1 text-muted">{{ post.date|date:"d E Y f" }}</div>
+                    <div class="mb-1 text-muted">{{ post.date }}</div>
 
                     <p class="card-text mb-auto">
                         {{ post.body|slice:":100" }}...
@@ -39,7 +39,7 @@
                         </a>
 
                         {% if post.user == user %}
-                            <a href="#" class="float-right ml-3 text-danger show-alert" data-id="{{ post.id }}">Удалить</a>
+                            <a href="#" class="float-right ml-3 text-danger remove-post" data-id="{{ post.id }}">Удалить</a>
                             <a href="{% url 'view_edit' post.id %}" class="float-right">Редактировать</a>
                         {% endif %}
                     </div>
@@ -69,8 +69,26 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div id="last-changes">
+
+        </div>
+    </div>
 </div>
 
 
+{% endblock %}
+
+
+
+{% block add_script %}
+<script>
+
+     $(document).ready(function () {
+         attachPostDelete();
+         attachLike($('.index-posts'));
+     })
+
+</script>
 
 {% endblock %}
