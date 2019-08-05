@@ -114,11 +114,11 @@ function attachComment($container) {
                 [
                     '<div class="post-comment">',
                     '   <div class="row">',
-                    '       <div class="comment-author col">',
+                    '       <div class="comment-author col-3">',
                     '           <a href="/user-posts/' + r.author.id + '/">' + r.author.username + '</a>',
                     '       </div>',
-                    '       <div class="comment-time col">' + r.date + '</div>',
-                    '       <div class="col">',
+                    '       <div class="comment-time col-4">' + r.date + '</div>',
+                    '       <div class="offset-3 col-2">',
                     '           <a href="#" class="form-comment-delete" data-id="' + r.id + '">Удалить</a>',
                     '       </div>',
                     '   </div>',
@@ -138,8 +138,8 @@ function PostView($container) {
     attachCommentDelete($container);
     attachLike($container);
     attachComment($container);
-
 }
+
 function getRecent() {
     var encoded_posts;
     if (encoded_posts = localStorage.getItem('posts')){
@@ -173,9 +173,9 @@ function drawRecentPosts($container) {
     $container.html(
         $.map(getRecent().reverse(), function (post) {
               return '<li class="nav-item ">'+
-                  '<a class="nav-link" href="/post/'+post.id+'/">'+post.title+
-                  '</a>'+
-              '</li>';
+                        '<a class="nav-link" href="/post/'+post.id+'/">'+post.title+
+                        '</a>'+
+                    '</li>';
         }).join(' ')
     );
 }

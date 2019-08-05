@@ -16,7 +16,7 @@ from django.views import View
 from django.views.generic import TemplateView, FormView, DeleteView
 
 from forms import PostForm, LoginForm, CommentForm
-from models import Post, Comment, get_formatted_date
+from models import Post, Comment
 
 
 class IndexView(TemplateView):
@@ -29,7 +29,10 @@ class IndexView(TemplateView):
         return posts.order_by('-date')
 
     def get_context_data(self, **kwargs):
-        posts = Post.objects.all()
+        # posts = Post.objects.all()
+        # print posts
+        posts = Post.objects.annotate(number_of_comments=Count('comment'))
+        print 'posts= ', posts
         posts = self.attach_filter(posts, **kwargs)
         posts = self.attach_sort(posts, **kwargs)
         paginator = Paginator(posts, 10)
@@ -125,6 +128,8 @@ class PostView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(PostView, self).get_context_data(**kwargs)
         context['post'] = get_object_or_404(Post, id=kwargs['postid'])
+        context['post'].is_liked = context['post'].is_liked_by(self.request.user)
+        print 'context =', context
         # context['blabla'] = get_formatted_date(context['post'].date)
         return context
 

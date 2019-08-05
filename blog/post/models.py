@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import dateformat
+from django.utils.timezone import localtime
 
 
 class Post(models.Model):
@@ -49,16 +50,16 @@ class Comment(models.Model):
             'id': self.id,
             'postId': self.post.id,
             'body': self.body,
-            'date': dateformat.format(self.date, settings.DATETIME_FORMAT),
+            'date': dateformat.format(localtime(self.date), settings.DATETIME_FORMAT),
             'author': {
                 'id': self.user.id,
                 'username': self.user.username
             }
         }
 
-    def formatted_date(self):
-        return dateformat.format(self.date, settings.DATETIME_FORMAT)
+    # def formatted_date(self):
+    #     return dateformat.format(self.date, settings.DATETIME_FORMAT)
 
 
-def get_formatted_date(date):
-    return dateformat.format(date, settings.DATETIME_FORMAT)
+# def get_formatted_date(date):
+#     return dateformat.format(date, settings.DATETIME_FORMAT)

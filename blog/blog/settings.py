@@ -109,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 TIME_ZONE = 'Asia/Yekaterinburg'
 
-DATETIME_FORMAT = "g E Y H:i"
+DATETIME_FORMAT = "d E Y H:i"
 
 USE_TZ = True
 
