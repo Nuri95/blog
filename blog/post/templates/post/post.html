@@ -78,13 +78,10 @@
 
     $(document).ready(function () {
         PostView($('#post_view_1'));
-        rememberPost({;
-        {
-            post.id
-        }
-    },
-        '{{ post.title }}';
-    )
+        rememberPost(
+            {{ post.id }},
+            '{{ post.title }}'
+        );
     })
 
 </script>
