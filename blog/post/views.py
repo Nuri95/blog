@@ -66,14 +66,12 @@ class IndexView(TemplateView):
 
         return context
 
-
     def dispatch(self, request, *args, **kwargs):
 
         if not self.request.user.is_authenticated():
             return redirect(reverse('view_login'))
 
         return super(IndexView, self).dispatch(request, *args, **kwargs)
-
 
 
 class PostLikeView(View):
@@ -129,7 +127,7 @@ class PostView(TemplateView):
         context = super(PostView, self).get_context_data(**kwargs)
         context['post'] = get_object_or_404(Post, id=kwargs['postid'])
         context['post'].is_liked = context['post'].is_liked_by(self.request.user)
-        print 'context =', context
+        # print 'context =', context
         # context['blabla'] = get_formatted_date(context['post'].date)
         return context
 
