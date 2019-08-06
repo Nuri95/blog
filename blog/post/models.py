@@ -23,7 +23,7 @@ class Post(models.Model):
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.title
 
-    # @property
+    @property
     def total_likes(self):
         print 'LIKE DB QUERY'
         return self.likes.count()
@@ -33,7 +33,7 @@ class Post(models.Model):
 
     @property
     def comments(self):
-        return self.comment_set.order_by('-date')
+        return self.comment_set.filter(comment=None).order_by('-date')
 
     # @property
     # def total_comment(self):
@@ -54,6 +54,7 @@ class Comment(models.Model):
         return {
             'id': self.id,
             'postId': self.post.id,
+            'commentId': self.comment.id if self.comment else None,
             'body': self.body,
             'date': dateformat.format(localtime(self.date), settings.DATETIME_FORMAT),
             'author': {
@@ -61,6 +62,10 @@ class Comment(models.Model):
                 'username': self.user.username
             }
         }
+
+    @property
+    def child_comments(self):
+        return self.comments.all().order_by('-date')
 
     # def formatted_date(self):
     #     return dateformat.format(self.date, settings.DATETIME_FORMAT)

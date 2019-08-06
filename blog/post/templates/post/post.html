@@ -54,16 +54,41 @@
                         <a href="{% url 'view_user' comment.user.id %}">{{ comment.user.username }}</a>
                     </div>
                     <div class="comment-time col-4">{{ comment.date }}</div>
-                    <div class="offset-3 col-2">
+                    <div class="offset-1 col-4">
                         {% if comment.user == user %}
-                        <a href="#" class="form-comment-delete" data-id="{{ comment.id }}">Удалить</a>
+                        <a href="#" class="form-comment-delete pull-right" data-id="{{ comment.id }}">Удалить</a>
+                        <a href="#" class="form-comment-reply mr-2 pull-right" data-id="{{ comment.id }}">Ответить</a>
                         {% endif %}
                     </div>
                 </div>
                 <div class="row">
                     <div class="comment-body col">{{ comment.body }}</div>
                 </div>
-
+                <div class="row child-comments">
+                    {% for child_comment in comment.child_comments %}
+                    <div class="row">
+                        <div class="col ml-5 mt-3">
+                            <div class="child-comment">
+                                <div class="row">
+                                    <div class="comment-author col-3">
+                                        <a href="{% url 'view_user' comment.user.id %}">{{ child_comment.user.username }}</a>
+                                    </div>
+                                    <div class="comment-time col-4">{{ child_comment.date }}</div>
+                                    <div class="offset-1 col-4">
+                                        {% if child_comment.user == user %}
+                                        <a href="#" class="form-comment-delete pull-right" data-id="{{ child_comment.id }}">Удалить</a>
+                                        <!--<a href="#" class="form-comment-reply mr-1 pull-right" data-id="{{ child_comment.id }}">Ответить</a>-->
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="comment-body col">{{ child_comment.body }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
             {% endfor %}
 

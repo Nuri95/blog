@@ -131,6 +131,8 @@ class PostCommentView(FormView):
     def dispatch(self, request, *args, **kwargs):
         try:
             self.post_object = Post.objects.get(id=request.POST.get('post_id'))
+            self.comment_object = Comment.objects.filter(id=request.POST.get(
+                'comment_id')).first()
         except Post.DoesNotExist:
             raise Http404
 
@@ -143,7 +145,8 @@ class PostCommentView(FormView):
         new_comment = super(PostCommentView, self).get_form_kwargs()
         new_comment['instance'] = Comment(date=timezone.now(),
                                           user=self.request.user,
-                                          post=self.post_object)
+                                          post=self.post_object,
+                                          comment=self.comment_object)
         return new_comment
 
 

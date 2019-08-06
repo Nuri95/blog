@@ -29,6 +29,13 @@ form{
     white-space: pre-wrap;
 }
 
+.reply-comment-input {
+    line-height: 34px;
+    margin-left: 15px;
+    margin-top: 5px;
+    margin-right: 10px;
+}
+
 .post-info, .post-comment .comment-time {
     color: #999;
     font-size: 14px;
@@ -126,4 +133,8 @@ button.like {
 .sidebar-heading {
   font-size: .75rem;
   text-transform: uppercase;
+}
+
+.pull-right {
+    float: right;
 }

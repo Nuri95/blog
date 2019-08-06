@@ -32,6 +32,56 @@ function removeComment(commentid) {
 
 }
 
+function sendReply(commentid) {
+    var $replyForm = $('.reply-form-' + commentid);
+    var postId = $('.form-comment').data('post');
+    var body = $replyForm.find('.comment-body').val();
+    $.post('/comment/new/', {post_id: postId, comment_id: commentid, body: body}, function (r) {
+        console.log(r);
+        $replyForm.remove();
+
+        // <div class="row">
+        //     <div class="col ml-5 mt-3">
+        //         <div class="child-comment">
+        //             <div class="row">
+        //                 <div class="comment-author col-3">
+        //                     <a href="{% url 'view_user' comment.user.id %}">{{ child_comment.user.username }}</a>
+        //                 </div>
+        //                 <div class="comment-time col-4">{{ child_comment.date }}</div>
+        //                 <div class="offset-1 col-4">
+        //                     {% if child_comment.user == user %}
+        //                     <a href="#" class="form-comment-delete pull-right" data-id="{{ child_comment.id }}">Удалить</a>
+        //                     <a href="#" class="form-comment-reply mr-1 pull-right" data-id="{{ child_comment.id }}">Ответить</a>
+        //                     {% endif %}
+        //                 </div>
+        //             </div>
+        //             <div class="row">
+        //                 <div class="comment-body col">{{ child_comment.body }}</div>
+        //             </div>
+        //         </div>
+        //     </div>
+        // </div>
+
+    });
+}
+
+function replyComment(commentid, e) {
+    var $commentBlock = $(e.target).parents('.post-comment');
+    var $replyForm = $('.reply-form-' + commentid);
+
+    if ($replyForm.length === 0) {
+        $commentBlock.append([
+            '<div class="row reply-form-' + commentid + '" style="width: 100%;">',
+            '   <input class="col-9 comment-body reply-comment-input" type="text" />',
+            '   <button class="col-2 btn btn-info reply-send" data-id="' + commentid + '">Отправить</button>',
+            '</div>'
+        ].join('\n'));
+        $replyForm = $('.reply-form-' + commentid);
+    }
+
+    attachSendReply($replyForm);
+}
+
 function logout() {
     request('POST', '/logout/', function () {
         alert('Пока');
@@ -85,6 +135,22 @@ function attachCommentDelete($container) {
     });
 }
 
+function attachCommentReply($container) {
+    $container.find('.comments').on('click', '.form-comment-reply', function (e) {
+        var $this = $(this);
+        replyComment($this.data('id'), e);
+        return false;
+    });
+}
+
+function attachSendReply($container) {
+    $container.on('click', '.reply-send', function () {
+        var $this = $(this);
+        sendReply($this.data('id'));
+        return false;
+    });
+}
+
 function attachLike($container) {
       $container.find('.like').click(function() {
         var $this = $(this);
@@ -118,8 +184,9 @@ function attachComment($container) {
                     '           <a href="/user-posts/' + r.author.id + '/">' + r.author.username + '</a>',
                     '       </div>',
                     '       <div class="comment-time col-4">' + r.date + '</div>',
-                    '       <div class="offset-3 col-2">',
-                    '           <a href="#" class="form-comment-delete" data-id="' + r.id + '">Удалить</a>',
+                    '       <div class="offset-1 col-4">',
+                    '           <a href="#" class="form-comment-delete pull-right" data-id="' + r.id + '">Удалить</a>',
+                    '           <a href="#" class="form-comment-reply mr-2 pull-right" data-id="' + r.id + '">Ответить</a>',
                     '       </div>',
                     '   </div>',
                     '   <div class="row">',
@@ -136,6 +203,7 @@ function attachComment($container) {
 
 function PostView($container) {
     attachCommentDelete($container);
+    attachCommentReply($container);
     attachLike($container);
     attachComment($container);
 }
