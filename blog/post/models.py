@@ -23,7 +23,7 @@ class Post(models.Model):
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.title
 
-    @property
+    # @property
     def total_likes(self):
         print 'LIKE DB QUERY'
         return self.likes.count()
@@ -35,9 +35,9 @@ class Post(models.Model):
     def comments(self):
         return self.comment_set.order_by('-date')
 
-    @property
-    def total_comment(self):
-        return self.comments.count()
+    # @property
+    # def total_comment(self):
+    #     return self.comments.count()
 
 
 class Comment(models.Model):

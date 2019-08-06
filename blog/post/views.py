@@ -31,12 +31,12 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         t1 = time()
-        posts = Post.objects.all()
+        # posts = Post.objects.all()
         # print posts.query
         #
         posts = Post.objects.annotate(number_of_comments=Count(
             'comment', distinct=True)
-        ).annotate(num_likes=Count('likes', distinct=True)).order_by('-id')
+        ).annotate(number_of_likes=Count('likes', distinct=True)).order_by('-id')
 
         print posts.query
 
@@ -92,8 +92,8 @@ class IndexView(TemplateView):
 class PostLikeView(View):
 
     def post(self, request, *args, **kwargs):
-        t1 = time()
-        connection.queries()
+        # t1 = time()
+        # connection.queries()
         postid = kwargs['postid']
         user = request.user
         post = get_object_or_404(Post, id=postid)
@@ -119,9 +119,9 @@ class PostLikeView(View):
         context = {
             'postId': postid,
             'isLiked': is_liked,
-            'totalLikes': post.total_likes
+            'totalLikes': post.total_likes()
         }
-        print time() - t1
+        # print time() - t1
         return JsonResponse(context)
 
 
