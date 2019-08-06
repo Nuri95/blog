@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+from time import time
 from django.contrib.auth import authenticate, login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db import connection
 from django.db.models import Count
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import redirect, get_object_or_404
@@ -29,11 +30,22 @@ class IndexView(TemplateView):
         return posts.order_by('-date')
 
     def get_context_data(self, **kwargs):
+        t1 = time()
         posts = Post.objects.all()
+        # print posts.query
+        #
+        posts = Post.objects.annotate(number_of_comments=Count(
+            'comment', distinct=True)
+        ).annotate(num_likes=Count('likes', distinct=True)).order_by('-id')
+
         print posts.query
-        posts = Post.objects.annotate(number_of_comments=Count('comment'))
-        print posts.query
-        print 'posts= ', posts
+
+        # posts = Post.objects.annotate(number_of_comments=Count('comment')).annotate(number_of_likes=Count('likes'))
+        # print 'number_of_comments=', posts, 'posts.query= ', posts.query
+        # posts=Post.objects.annotate(number_of_likes=Count('likes'))
+        # print 'number_of_likes = ', posts, 'posts.query = ', posts.query
+        # posts = Post.objects.annotate()
+        # print posts.query
         posts = self.attach_filter(posts, **kwargs)
         posts = self.attach_sort(posts, **kwargs)
         paginator = Paginator(posts, 10)
@@ -65,6 +77,8 @@ class IndexView(TemplateView):
         else:
             context['page_next'] = None
 
+        print 'TIME {0}'.format(time() - t1)
+
         return context
 
     def dispatch(self, request, *args, **kwargs):
@@ -78,6 +92,8 @@ class IndexView(TemplateView):
 class PostLikeView(View):
 
     def post(self, request, *args, **kwargs):
+        t1 = time()
+        connection.queries()
         postid = kwargs['postid']
         user = request.user
         post = get_object_or_404(Post, id=postid)
@@ -89,6 +105,15 @@ class PostLikeView(View):
             post.likes.add(user)
             is_liked = True
 
+        # like, created = Like.objects.get_or_create(
+        #     user=user, post=post,
+        #     defaults={'is_active': True}
+        # )
+        #
+        # if not created:
+        #     like.is_activated = not like.is_activated
+        #     like.save(update_fields=['is_activated'])
+
         post.save()
 
         context = {
@@ -96,6 +121,7 @@ class PostLikeView(View):
             'isLiked': is_liked,
             'totalLikes': post.total_likes
         }
+        print time() - t1
         return JsonResponse(context)
 
 

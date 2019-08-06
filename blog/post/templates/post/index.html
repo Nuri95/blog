@@ -24,6 +24,7 @@
                         <button data-id="{{ post.id }}" class="like {% if post.is_liked %}liked{% endif %}" type="button">
                             <i class="fa fa-heart" aria-hidden="true"></i>
                             <span id="like-count-{{ post.id }}">
+                                <!--{{ post.number_of_likes }}-->
                                 {% with total_likes=post.total_likes %}
                                     {{ total_likes }}
                                 {% endwith %}
@@ -32,10 +33,10 @@
                         <a href="{% url 'view_post' post.id %}" class="count-comment" >
                             <i class="fa fa-comments" aria-hidden="true"></i>
                             <span id="comment-count-{{ post.id }}">
-                                {{ post.number_of_comments }}
-                                <!--{% with total_comment=post.total_comment %}-->
-                                    <!--{{ total_comment }}-->
-                                <!--{% endwith %}-->
+                                <!--{{ post.number_of_comments }}-->
+                                {% with total_comment=post.total_comment %}
+                                    {{ total_comment }}
+                                {% endwith %}
                             </span>
                         </a>
 
