@@ -17,11 +17,15 @@ class Post(models.Model):
     user = models.ForeignKey(User)
     likes = models.ManyToManyField(User, blank=True, related_name='likes')
 
+    # Post.objects.like_set.filter(is_active=True).count()
+    # Like.is_active = False
+
     def __unicode__(self):  # Python 3: def __str__(self):
         return self.title
 
     @property
     def total_likes(self):
+        print 'LIKE DB QUERY'
         return self.likes.count()
 
     def is_liked_by(self, user):
