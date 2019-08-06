@@ -42,6 +42,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey(Post)
+    comment = models.ForeignKey('self', related_name='comments', on_delete=models.CASCADE, null=True, blank=True)
     body = models.TextField()
     date = models.DateTimeField()
     user = models.ForeignKey(User)
