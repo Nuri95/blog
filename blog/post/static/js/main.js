@@ -38,39 +38,38 @@ function sendReply(commentid) {
     var body = $replyForm.find('.comment-body').val();
     $.post('/comment/new/', {post_id: postId, comment_id: commentid, body: body}, function (r) {
         console.log(r);
-        $replyForm.remove();
 
-        // <div class="row">
-        //     <div class="col ml-5 mt-3">
-        //         <div class="child-comment">
-        //             <div class="row">
-        //                 <div class="comment-author col-3">
-        //                     <a href="{% url 'view_user' comment.user.id %}">{{ child_comment.user.username }}</a>
-        //                 </div>
-        //                 <div class="comment-time col-4">{{ child_comment.date }}</div>
-        //                 <div class="offset-1 col-4">
-        //                     {% if child_comment.user == user %}
-        //                     <a href="#" class="form-comment-delete pull-right" data-id="{{ child_comment.id }}">Удалить</a>
-        //                     <a href="#" class="form-comment-reply mr-1 pull-right" data-id="{{ child_comment.id }}">Ответить</a>
-        //                     {% endif %}
-        //                 </div>
-        //             </div>
-        //             <div class="row">
-        //                 <div class="comment-body col">{{ child_comment.body }}</div>
-        //             </div>
-        //         </div>
-        //     </div>
-        // </div>
+        $replyForm.parents('.child-comments').find('.col-12').prepend([
+            '<div class="row">',
+            '    <div class="col ml-5 mt-3">',
+            '        <div class="child-comment">',
+            '            <div class="row">',
+            '                <div class="comment-author col-3">',
+            '                    <a href="/user-posts/' + r.author.id + '/">' + r.author.username + '</a>',
+            '                </div>',
+            '                <div class="comment-time col-4">' + r.date + '</div>',
+            '                <div class="offset-1 col-4">',
+            '                    <a href="#" class="form-comment-delete pull-right" data-id="' + r.author.id + '">Удалить</a>',
+            '                </div>',
+            '            </div>',
+            '            <div class="row">',
+            '                <div class="comment-body col">' + r.body + '</div>',
+            '            </div>',
+            '        </div>',
+            '    </div>',
+            '</div>'
+        ].join('\n'));
+
+        $replyForm.remove();
 
     });
 }
 
 function replyComment(commentid, e) {
-    var $commentBlock = $(e.target).parents('.post-comment');
     var $replyForm = $('.reply-form-' + commentid);
 
     if ($replyForm.length === 0) {
-        $commentBlock.append([
+        $(e.target).parents('.post-comment').find('.child-comments').prepend([
             '<div class="row reply-form-' + commentid + '" style="width: 100%;">',
             '   <input class="col-9 comment-body reply-comment-input" type="text" />',
             '   <button class="col-2 btn btn-info reply-send" data-id="' + commentid + '">Отправить</button>',
