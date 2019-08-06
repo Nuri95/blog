@@ -119,7 +119,7 @@ class PostLikeView(View):
         context = {
             'postId': postid,
             'isLiked': is_liked,
-            'totalLikes': post.total_likes()
+            'totalLikes': post.total_likes
         }
         # print time() - t1
         return JsonResponse(context)
