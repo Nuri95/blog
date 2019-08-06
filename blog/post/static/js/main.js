@@ -76,6 +76,7 @@ function replyComment(commentid, e) {
             '</div>'
         ].join('\n'));
         $replyForm = $('.reply-form-' + commentid);
+        $replyForm.find('.reply-comment-input').focus();
     }
 
     attachSendReply($replyForm);
