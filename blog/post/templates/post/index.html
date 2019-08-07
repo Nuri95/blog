@@ -40,7 +40,7 @@
                             </span>
                         </a>
 
-                        {% if post.user == user %}
+                        {% if post.user == current_user %}
                             <a href="#" class="float-right ml-3 text-danger remove-post" data-id="{{ post.id }}">Удалить</a>
                             <a href="{% url 'view_edit' post.id %}" class="float-right">Редактировать</a>
                         {% endif %}

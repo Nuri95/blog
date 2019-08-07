@@ -86,6 +86,8 @@ class IndexView(TemplateView):
         if not self.request.user.is_authenticated():
             return redirect(reverse('view_login'))
 
+        kwargs['current_user'] = request.user
+
         return super(IndexView, self).dispatch(request, *args, **kwargs)
 
 
@@ -194,6 +196,10 @@ class PostUserView(IndexView):
         kwargs['user'] = get_object_or_404(User, id=userid)
         return super(PostUserView, self).get_context_data(**kwargs)
 
+    def dispatch(self, request, *args, **kwargs):
+        kwargs['current_user'] = request.user
+
+        return super(PostUserView, self).dispatch(request, *args, **kwargs)
 
 class PostDeleteView(DeleteView):
     model = Post

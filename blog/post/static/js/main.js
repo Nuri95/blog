@@ -96,20 +96,16 @@ function attachCommentReply($container) {
 
 
 function replyComment(commentid, e) {
+    $('.reply-form').remove();
+
+    $(e.target).parents('.post-comment').find('.child-comments').prepend([
+        '<div class="row reply-form reply-form-' + commentid + '" style="width: 100%;">',
+        '   <input class="col-9 comment-body reply-comment-input" type="text" />',
+        '   <button class="col-2 btn btn-info reply-send" data-id="' + commentid + '">Отправить</button>',
+        '</div>'
+    ].join('\n'));
+
     var $replyForm = $('.reply-form-' + commentid);
-    // console.log('replyForm= ', $replyForm);
-    // debugger;
-    if ($replyForm.length === 0) {
-        console.log('e= ',e);
-        $(e.target).parents('.post-comment').find('.child-comments').prepend([
-            '<div class="row reply-form-' + commentid + '" style="width: 100%;">',
-            '   <input class="col-9 comment-body reply-comment-input" type="text" />',
-            '   <button class="col-2 btn btn-info reply-send" data-id="' + commentid + '">Отправить</button>',
-            '</div>'
-        ].join('\n'));
-        // console.log('здесь');
-        $replyForm = $('.reply-form-' + commentid);
-    }
     var replyName = $(e.target).parents('.child-comment,.post-comment').first().find('.comment-author>a').first().text();
     var $commentInput = $replyForm.find('.reply-comment-input');
 
