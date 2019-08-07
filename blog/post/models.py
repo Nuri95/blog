@@ -63,7 +63,7 @@ class Comment(models.Model):
         return self.body
 
     def as_json(self):
-        return {
+        result = {
             'id': self.id,
             'postId': self.post.id,
             'commentId': self.comment.id if self.comment else None,
@@ -76,6 +76,14 @@ class Comment(models.Model):
                 'username': self.user.username
             }
         }
+
+        if self.comment:
+            result['reply'] = {
+                'id': self.comment.user.id,
+                'username': self.comment.user.username
+            }
+
+        return result
 
     @property
     def child_comments(self):

@@ -137,9 +137,9 @@ class PostCommentView(FormView):
             self.root_comment_object = Comment.objects.filter(id=request.POST.get(
                 'root_comment_id')).first()
             # print '2=', self.comment_object
-            print request.POST.get('root_comment_id')
-            print self.comment_object
-            print self.root_comment_object
+            print 'root_comment_id = ',request.POST.get('root_comment_id')
+            print 'self.comment_object= ',self.comment_object
+            print 'self.root_comment_object= ', self.root_comment_object
         except Post.DoesNotExist:
             raise Http404
 

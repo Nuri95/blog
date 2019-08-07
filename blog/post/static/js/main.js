@@ -110,10 +110,10 @@ function replyComment(commentid, e) {
         // console.log('здесь');
         $replyForm = $('.reply-form-' + commentid);
     }
-    var perlyName = $(e.target).parents('.child-comment,.post-comment').first().find('.comment-author>a').first().text();
+    var replyName = $(e.target).parents('.child-comment,.post-comment').first().find('.comment-author>a').first().text();
     var $commentInput = $replyForm.find('.reply-comment-input');
 
-    $commentInput.val(perlyName + ', ');
+    $commentInput.val(replyName + ', ');
     $commentInput.focus();
 
     attachSendReply($replyForm);
@@ -141,11 +141,12 @@ function sendReply(commentid, rootCommentid) {
             '    <div class="col ml-5 mt-3">',
             '        <div class="child-comment child-comment-' + r.id + '">',
             '            <div class="row">',
-            '                <div class="comment-author col-3">',
+            '                <div class="comment-author col-4">',
             '                    <a href="/user-posts/' + r.author.id + '/">' + r.author.username + '</a>',
+            '                    ответил <a href="/user-posts/' + r.reply.id + '/">' + r.reply.username + '</a>',
             '                </div>',
             '                <div class="comment-time col-4">' + r.date + '</div>',
-            '                <div class="offset-1 col-4">',
+            '                <div class="col-4">',
             '                    <a href="#" class="form-comment-delete pull-right" data-id="' + r.id + '">Удалить</a>',
             '                    <a href="#" class="form-comment-reply mr-1 pull-right" data-id="' + r.id + '">Ответить</a>',
             '                </div>',
