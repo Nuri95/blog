@@ -32,55 +32,6 @@ function removeComment(commentid) {
 
 }
 
-function sendReply(commentid) {
-    var $replyForm = $('.reply-form-' + commentid);
-    var postId = $('.form-comment').data('post');
-    var body = $replyForm.find('.comment-body').val();
-    $.post('/comment/new/', {post_id: postId, comment_id: commentid, body: body}, function (r) {
-        console.log(r);
-
-        $replyForm.parents('.child-comments').find('.col-12').prepend([
-            '<div class="row">',
-            '    <div class="col ml-5 mt-3">',
-            '        <div class="child-comment">',
-            '            <div class="row">',
-            '                <div class="comment-author col-3">',
-            '                    <a href="/user-posts/' + r.author.id + '/">' + r.author.username + '</a>',
-            '                </div>',
-            '                <div class="comment-time col-4">' + r.date + '</div>',
-            '                <div class="offset-1 col-4">',
-            '                    <a href="#" class="form-comment-delete pull-right" data-id="' + r.author.id + '">Удалить</a>',
-            '                </div>',
-            '            </div>',
-            '            <div class="row">',
-            '                <div class="comment-body col">' + r.body + '</div>',
-            '            </div>',
-            '        </div>',
-            '    </div>',
-            '</div>'
-        ].join('\n'));
-
-        $replyForm.remove();
-
-    });
-}
-
-function replyComment(commentid, e) {
-    var $replyForm = $('.reply-form-' + commentid);
-
-    if ($replyForm.length === 0) {
-        $(e.target).parents('.post-comment').find('.child-comments').prepend([
-            '<div class="row reply-form-' + commentid + '" style="width: 100%;">',
-            '   <input class="col-9 comment-body reply-comment-input" type="text" />',
-            '   <button class="col-2 btn btn-info reply-send" data-id="' + commentid + '">Отправить</button>',
-            '</div>'
-        ].join('\n'));
-        $replyForm = $('.reply-form-' + commentid);
-        $replyForm.find('.reply-comment-input').focus();
-    }
-
-    attachSendReply($replyForm);
-}
 
 function logout() {
     request('POST', '/logout/', function () {
@@ -143,14 +94,111 @@ function attachCommentReply($container) {
     });
 }
 
+
+function replyComment(commentid, e) {
+    var $replyForm = $('.reply-form-' + commentid);
+    // console.log('replyForm= ', $replyForm);
+    // debugger;
+    if ($replyForm.length === 0) {
+        console.log('e= ',e);
+        $(e.target).parents('.post-comment').find('.child-comments').prepend([
+            '<div class="row reply-form-' + commentid + '" style="width: 100%;">',
+            '   <input class="col-9 comment-body reply-comment-input" type="text" />',
+            '   <button class="col-2 btn btn-info reply-send" data-id="' + commentid + '">Отправить</button>',
+            '</div>'
+        ].join('\n'));
+        console.log('здесь');
+        $replyForm = $('.reply-form-' + commentid);
+        console.log($replyForm);
+        // debugger;
+        $replyForm.find('.reply-comment-input').focus();
+    }
+
+    attachSendReply($replyForm);
+}
+
 function attachSendReply($container) {
     $container.on('click', '.reply-send', function () {
         var $this = $(this);
+        console.log($this);
         sendReply($this.data('id'));
         return false;
     });
 }
 
+function sendReply(commentid) {
+    var $replyForm = $('.reply-form-' + commentid);
+    var postId = $('.form-comment').data('post');
+    var body = $replyForm.find('.comment-body').val();
+
+    $.post('/comment/new/', {post_id: postId, comment_id: commentid, body: body}, function (r) {
+        console.log(r);
+
+        $replyForm.parents('.child-comments').find('.col-12').prepend([
+            '<div class="row">',
+            '    <div class="col ml-5 mt-3">',
+            '        <div class="child-comment">',
+            '            <div class="row">',
+            '                <div class="comment-author col-3">',
+            '                    <a href="/user-posts/' + r.author.id + '/">' + r.author.username + '</a>',
+            '                </div>',
+            '                <div class="comment-time col-4">' + r.date + '</div>',
+            '                <div class="offset-1 col-4">',
+            '                    <a href="#" class="form-comment-delete pull-right" data-id="' + r.author.id + '">Удалить</a>',
+            '                </div>',
+            '            </div>',
+            '            <div class="row">',
+            '                <div class="comment-body col">' + r.body + '</div>',
+            '            </div>',
+            '        </div>',
+            '    </div>',
+            '</div>'
+        ].join('\n'));
+
+        $replyForm.remove();
+
+    });
+}
+
+function attachComment($container) {
+    $container.find('.form-comment').submit(function () {
+
+        var $this = $(this);
+        var postId = $this.data('post');
+        var body = $this.find('.comment-body').val();
+
+        $.post('/comment/new/', {post_id: postId, body: body}, function (r) {
+
+            console.log('request= ',r);
+
+            $container.find('.comments').prepend(
+                [
+                    '<div class="post-comment">',
+                    '   <div class="row">',
+                    '       <div class="comment-author col-3">',
+                    '           <a href="/user-posts/' + r.author.id + '/">' + r.author.username + '</a>',
+                    '       </div>',
+                    '       <div class="comment-time col-4">' + r.date + '</div>',
+                    '       <div class="offset-1 col-4">',
+                    '           <a href="#" class="form-comment-delete pull-right" data-id="' + r.id + '">Удалить</a>',
+                    '           <a href="#" class="form-comment-reply mr-2 pull-right" data-id="' + r.id + '">Ответить</a>',
+                    '       </div>',
+                    '   </div>',
+                    '   <div class="row">',
+                    '       <div class="comment-body col">' + r.body + '</div>',
+                    '   </div>',
+                    '   <div class="row child-comments">',
+                    '       <div class="col-12">',
+                    '       </div>',
+                    '   </div>',
+                    '</div>'
+                ].join('\n')
+            );
+            $this.find('.comment-body').val('');
+        });
+        return false;
+    });
+}
 function attachLike($container) {
       $container.find('.like').click(function() {
         var $this = $(this);
@@ -168,44 +216,14 @@ function attachLike($container) {
     });
 }
 
-function attachComment($container) {
-    $container.find('.form-comment').submit(function () {
-        var $this = $(this);
-        var postId = $this.data('post');
-        var body = $this.find('.comment-body').val();
-
-        $.post('/comment/new/', {post_id: postId, body: body}, function (r) {
-            console.log(r);
-            $container.find('.comments').prepend(
-                [
-                    '<div class="post-comment">',
-                    '   <div class="row">',
-                    '       <div class="comment-author col-3">',
-                    '           <a href="/user-posts/' + r.author.id + '/">' + r.author.username + '</a>',
-                    '       </div>',
-                    '       <div class="comment-time col-4">' + r.date + '</div>',
-                    '       <div class="offset-1 col-4">',
-                    '           <a href="#" class="form-comment-delete pull-right" data-id="' + r.id + '">Удалить</a>',
-                    '           <a href="#" class="form-comment-reply mr-2 pull-right" data-id="' + r.id + '">Ответить</a>',
-                    '       </div>',
-                    '   </div>',
-                    '   <div class="row">',
-                    '       <div class="comment-body col">' + r.body + '</div>',
-                    '   </div>',
-                    '</div>'
-                ].join('\n')
-            );
-            $this.find('.comment-body').val('');
-        });
-        return false;
-    });
-}
 
 function PostView($container) {
-    attachCommentDelete($container);
-    attachCommentReply($container);
-    attachLike($container);
     attachComment($container);
+    attachLike($container);
+    attachCommentReply($container);
+    attachCommentDelete($container);
+
+
 }
 
 function getRecent() {

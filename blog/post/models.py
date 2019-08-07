@@ -15,7 +15,9 @@ class Post(models.Model):
     body = models.TextField()
     date = models.DateTimeField()
     user = models.ForeignKey(User)
-    likes = models.ManyToManyField(User, blank=True, related_name='likes')
+    likes = models.ManyToManyField(User,
+                                   blank=True,
+                                   related_name='likes')
 
     # Post.objects.like_set.filter(is_active=True).count()
     # Like.is_active = False
@@ -42,7 +44,11 @@ class Post(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey(Post)
-    comment = models.ForeignKey('self', related_name='comments', on_delete=models.CASCADE, null=True, blank=True)
+    comment = models.ForeignKey('self',
+                                related_name='comments',
+                                on_delete=models.CASCADE,
+                                null=True,
+                                blank=True)
     body = models.TextField()
     date = models.DateTimeField()
     user = models.ForeignKey(User)
@@ -56,7 +62,8 @@ class Comment(models.Model):
             'postId': self.post.id,
             'commentId': self.comment.id if self.comment else None,
             'body': self.body,
-            'date': dateformat.format(localtime(self.date), settings.DATETIME_FORMAT),
+            'date': dateformat.format(localtime(self.date),
+                                      settings.DATETIME_FORMAT),
             'author': {
                 'id': self.user.id,
                 'username': self.user.username
@@ -67,9 +74,3 @@ class Comment(models.Model):
     def child_comments(self):
         return self.comments.all().order_by('-date')
 
-    # def formatted_date(self):
-    #     return dateformat.format(self.date, settings.DATETIME_FORMAT)
-
-
-# def get_formatted_date(date):
-#     return dateformat.format(date, settings.DATETIME_FORMAT)

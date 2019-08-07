@@ -133,6 +133,7 @@ class PostCommentView(FormView):
             self.post_object = Post.objects.get(id=request.POST.get('post_id'))
             self.comment_object = Comment.objects.filter(id=request.POST.get(
                 'comment_id')).first()
+            print self.comment_object
         except Post.DoesNotExist:
             raise Http404
 
