@@ -107,12 +107,14 @@ function replyComment(commentid, e) {
             '   <button class="col-2 btn btn-info reply-send" data-id="' + commentid + '">Отправить</button>',
             '</div>'
         ].join('\n'));
-        console.log('здесь');
+        // console.log('здесь');
         $replyForm = $('.reply-form-' + commentid);
-        console.log($replyForm);
-        // debugger;
-        $replyForm.find('.reply-comment-input').focus();
     }
+    var perlyName = $(e.target).parents('.child-comment,.post-comment').first().find('.comment-author>a').first().text();
+    var $commentInput = $replyForm.find('.reply-comment-input');
+
+    $commentInput.val(perlyName + ', ');
+    $commentInput.focus();
 
     attachSendReply($replyForm);
 }
@@ -121,30 +123,31 @@ function attachSendReply($container) {
     $container.on('click', '.reply-send', function () {
         var $this = $(this);
         console.log($this);
-        sendReply($this.data('id'));
+        sendReply($this.data('id'), $this.parents('.post-comment').data('id'));
         return false;
     });
 }
 
-function sendReply(commentid) {
+function sendReply(commentid, rootCommentid) {
     var $replyForm = $('.reply-form-' + commentid);
     var postId = $('.form-comment').data('post');
     var body = $replyForm.find('.comment-body').val();
 
-    $.post('/comment/new/', {post_id: postId, comment_id: commentid, body: body}, function (r) {
+    $.post('/comment/new/', {post_id: postId, comment_id: commentid, root_comment_id: rootCommentid, body: body}, function (r) {
         console.log(r);
 
         $replyForm.parents('.child-comments').find('.col-12').prepend([
             '<div class="row">',
             '    <div class="col ml-5 mt-3">',
-            '        <div class="child-comment">',
+            '        <div class="child-comment child-comment-' + r.id + '">',
             '            <div class="row">',
             '                <div class="comment-author col-3">',
             '                    <a href="/user-posts/' + r.author.id + '/">' + r.author.username + '</a>',
             '                </div>',
             '                <div class="comment-time col-4">' + r.date + '</div>',
             '                <div class="offset-1 col-4">',
-            '                    <a href="#" class="form-comment-delete pull-right" data-id="' + r.author.id + '">Удалить</a>',
+            '                    <a href="#" class="form-comment-delete pull-right" data-id="' + r.id + '">Удалить</a>',
+            '                    <a href="#" class="form-comment-reply mr-1 pull-right" data-id="' + r.id + '">Ответить</a>',
             '                </div>',
             '            </div>',
             '            <div class="row">',
@@ -173,7 +176,7 @@ function attachComment($container) {
 
             $container.find('.comments').prepend(
                 [
-                    '<div class="post-comment">',
+                    '<div class="post-comment" data-id="' + r.id + '">',
                     '   <div class="row">',
                     '       <div class="comment-author col-3">',
                     '           <a href="/user-posts/' + r.author.id + '/">' + r.author.username + '</a>',

@@ -35,6 +35,7 @@ class Post(models.Model):
 
     @property
     def comments(self):
+        print 'comment db query'
         return self.comment_set.filter(comment=None).order_by('-date')
 
     # @property
@@ -44,6 +45,11 @@ class Post(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey(Post)
+    root_comment = models.ForeignKey('self',
+                                related_name='all_comments',
+                                on_delete=models.CASCADE,
+                                null=True,
+                                blank=True)
     comment = models.ForeignKey('self',
                                 related_name='comments',
                                 on_delete=models.CASCADE,
@@ -61,6 +67,7 @@ class Comment(models.Model):
             'id': self.id,
             'postId': self.post.id,
             'commentId': self.comment.id if self.comment else None,
+            'rootCommentId': self.root_comment.id if self.root_comment else None,
             'body': self.body,
             'date': dateformat.format(localtime(self.date),
                                       settings.DATETIME_FORMAT),
@@ -72,5 +79,6 @@ class Comment(models.Model):
 
     @property
     def child_comments(self):
-        return self.comments.all().order_by('-date')
+        print 'childComment db query'
+        return self.all_comments.all().order_by('-date')
 
