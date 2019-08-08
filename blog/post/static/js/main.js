@@ -1,65 +1,42 @@
-function request(type, url, successCallback, failCallback) {
-    var request = new XMLHttpRequest();
-
-    request.open(type, url, true);
-    request.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
-
-    request.onreadystatechange = function () {
-        if (request.readyState !== 4)
-            return;
-        if (request.status !== 200)
-            failCallback();
-        else
-            successCallback();
-    };
-    request.send();
-}
-
-function removePost(postid) {
-    request('DELETE', '/post/' + postid + '/delete/', function () {
-        document.location.reload();
-    }, function () {
-        alert('Ошибка удаления');
+function removePost(postid){
+    $.ajax({
+        url: '/post/' + postid + '/delete/',
+        method: 'DELETE',
+        success: function (data) {
+            console.log(data);
+            document.location.reload();
+        },
+        error: function (a, b, c) {
+            console.log(a, b, c);
+            alert('Ошибка удаления');
+        }
     });
 }
 
 function removeComment(commentid) {
-    request('DELETE', '/comment/'+commentid + '/delete/', function () {
-        document.location.reload();
-    }, function () {
-        alert('Ошибка удаления');
-    });
-
+     $.ajax({
+        url: '/comment/'+commentid + '/delete/',
+        method: 'DELETE',
+        success: function () {
+            document.location.reload();
+        },
+        error: function () {
+            alert('Ошибка удаления')
+        }
+    })
 }
-
 
 function logout() {
-    request('POST', '/logout/', function () {
+    $.post('/logout/', function () {
         alert('Пока');
-        document.location.href = '/'
-
+        document.location.href='/';
     });
-}
-
-function getCookie(name) {
-    var cookieValue = null;
-    if (document.cookie) {
-        var cookies = document.cookie.split(';');
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
 }
 
 $.ajaxSetup({
      beforeSend: function(xhr) {
          console.log(xhr);
-         xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+         xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
      }
 });
 
@@ -77,7 +54,6 @@ function attachPostDelete() {
     });
 }
 
-
 function attachCommentDelete($container) {
     $container.find('.comments').on('click', '.form-comment-delete', function () {
         var $this = $(this);
@@ -94,11 +70,10 @@ function attachCommentReply($container) {
     });
 }
 
-
 function replyComment(commentid, e) {
     $('.reply-form').remove();
 
-    $(e.target).parents('.post-comment').find('.child-comments').prepend([
+    $(e.target).parents('.post-comment').find('.child-comments').append([
         '<div class="row reply-form reply-form-' + commentid + '" style="width: 100%;">',
         '   <input class="col-9 comment-body reply-comment-input" type="text" />',
         '   <button class="col-2 btn btn-info reply-send" data-id="' + commentid + '">Отправить</button>',
@@ -132,7 +107,7 @@ function sendReply(commentid, rootCommentid) {
     $.post('/comment/new/', {post_id: postId, comment_id: commentid, root_comment_id: rootCommentid, body: body}, function (r) {
         console.log(r);
 
-        $replyForm.parents('.child-comments').find('.col-12').prepend([
+        $replyForm.parents('.child-comments').find('.col-12').append([
             '<div class="row">',
             '    <div class="col ml-5 mt-3">',
             '        <div class="child-comment child-comment-' + r.id + '">',
@@ -169,8 +144,6 @@ function attachComment($container) {
 
         $.post('/comment/new/', {post_id: postId, body: body}, function (r) {
 
-            console.log('request= ',r);
-
             $container.find('.comments').prepend(
                 [
                     '<div class="post-comment" data-id="' + r.id + '">',
@@ -199,6 +172,7 @@ function attachComment($container) {
         return false;
     });
 }
+
 function attachLike($container) {
       $container.find('.like').click(function() {
         var $this = $(this);
@@ -245,10 +219,12 @@ function rememberPost(post_id, title) {
          if (post_id === post.id)
              return index;
      });
+
      if (alreadyExists.length){
          posts.splice(alreadyExists[0], 1);
      }
      posts.push({"id":post_id, "title": title});
+
      if (posts.length > 10){
          posts.shift();
      }

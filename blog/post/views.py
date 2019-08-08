@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db import connection
 from django.db.models import Count
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import redirect, get_object_or_404
@@ -30,22 +29,10 @@ class IndexView(TemplateView):
         return posts.order_by('-date')
 
     def get_context_data(self, **kwargs):
-        t1 = time()
-        # posts = Post.objects.all()
-        # print posts.query
-        #
         posts = Post.objects.annotate(number_of_comments=Count(
             'comment', distinct=True)
         ).annotate(number_of_likes=Count('likes', distinct=True)).order_by('-id')
 
-        print posts.query
-
-        # posts = Post.objects.annotate(number_of_comments=Count('comment')).annotate(number_of_likes=Count('likes'))
-        # print 'number_of_comments=', posts, 'posts.query= ', posts.query
-        # posts=Post.objects.annotate(number_of_likes=Count('likes'))
-        # print 'number_of_likes = ', posts, 'posts.query = ', posts.query
-        # posts = Post.objects.annotate()
-        # print posts.query
         posts = self.attach_filter(posts, **kwargs)
         posts = self.attach_sort(posts, **kwargs)
         paginator = Paginator(posts, 10)
@@ -62,22 +49,18 @@ class IndexView(TemplateView):
         for post in posts:
             post.is_liked = post.is_liked_by(self.request.user)
 
-        # models = [ShortPostModel(post) for post in posts]
         context = super(IndexView, self).get_context_data(**kwargs)
-        print 'context= ', context
         context['count'] = paginator.count
         context['page_size'] = 10
         context['page_number'] = int(page_number)
         context['page_previous'] = int(page_number) - 1
         context['posts'] = posts
-        context['url_name']=self.request.path #resolve(self.request.path).url_name
+        context['url_name'] = self.request.path
 
         if context['page_size'] * context['page_number'] < context['count']:
             context['page_next'] = int(page_number) + 1
         else:
             context['page_next'] = None
-
-        print 'TIME {0}'.format(time() - t1)
 
         return context
 
@@ -94,8 +77,6 @@ class IndexView(TemplateView):
 class PostLikeView(View):
 
     def post(self, request, *args, **kwargs):
-        # t1 = time()
-        # connection.queries()
         postid = kwargs['postid']
         user = request.user
         post = get_object_or_404(Post, id=postid)
@@ -107,15 +88,6 @@ class PostLikeView(View):
             post.likes.add(user)
             is_liked = True
 
-        # like, created = Like.objects.get_or_create(
-        #     user=user, post=post,
-        #     defaults={'is_active': True}
-        # )
-        #
-        # if not created:
-        #     like.is_activated = not like.is_activated
-        #     like.save(update_fields=['is_activated'])
-
         post.save()
 
         context = {
@@ -123,7 +95,6 @@ class PostLikeView(View):
             'isLiked': is_liked,
             'totalLikes': post.total_likes
         }
-        # print time() - t1
         return JsonResponse(context)
 
 
@@ -133,15 +104,11 @@ class PostCommentView(FormView):
     def dispatch(self, request, *args, **kwargs):
         try:
             self.post_object = Post.objects.get(id=request.POST.get('post_id'))
-            # print '1=', self.post_object
             self.comment_object = Comment.objects.filter(id=request.POST.get(
                 'comment_id')).first()
             self.root_comment_object = Comment.objects.filter(id=request.POST.get(
                 'root_comment_id')).first()
-            # print '2=', self.comment_object
-            print 'root_comment_id = ',request.POST.get('root_comment_id')
-            print 'self.comment_object= ',self.comment_object
-            print 'self.root_comment_object= ', self.root_comment_object
+
         except Post.DoesNotExist:
             raise Http404
 
@@ -157,7 +124,6 @@ class PostCommentView(FormView):
                                           post=self.post_object,
                                           comment=self.comment_object,
                                           root_comment=self.root_comment_object)
-        print 'new_comment=', new_comment
         return new_comment
 
 
@@ -168,8 +134,7 @@ class PostView(TemplateView):
         context = super(PostView, self).get_context_data(**kwargs)
         context['post'] = get_object_or_404(Post, id=kwargs['postid'])
         context['post'].is_liked = context['post'].is_liked_by(self.request.user)
-        # print 'context =', context
-        # context['blabla'] = get_formatted_date(context['post'].date)
+
         return context
 
 
@@ -194,12 +159,14 @@ class PostUserView(IndexView):
     def get_context_data(self, **kwargs):
         userid = kwargs['userid']
         kwargs['user'] = get_object_or_404(User, id=userid)
+
         return super(PostUserView, self).get_context_data(**kwargs)
 
     def dispatch(self, request, *args, **kwargs):
         kwargs['current_user'] = request.user
 
         return super(PostUserView, self).dispatch(request, *args, **kwargs)
+
 
 class PostDeleteView(DeleteView):
     model = Post
