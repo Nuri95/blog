@@ -12,12 +12,14 @@
                     <input name="title" class="form-control" type="text" maxlength="200" required/>
                 </label>
             </div>
+
             <div class="row">
                 <label class="form-group col-12">
                     {{ form.body.errors }}
                     Текст
-                        <textarea class="form-control"  name="body" rows="10" required ></textarea>
+                        <textarea class="form-control" id="summernote"  name="body" rows="10" required ></textarea>
                 </label>
+
             </div>
             <div class="row">
             <div class="col-12 text-center">

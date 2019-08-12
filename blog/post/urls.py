@@ -47,4 +47,5 @@ urlpatterns = [
         name='view_best'
         ),
 
+
 ]

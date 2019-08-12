@@ -125,3 +125,4 @@ USE_I18N = True
 USE_L10N = False
 
 LANGUAGE_CODE = 'ru-RU'
+
