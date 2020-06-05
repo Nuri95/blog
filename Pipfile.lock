@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "892976de7189d7778d263074a5b6b5c5ae95d030f1b44ca0f6376f9aca73396f"
+            "sha256": "77f68a3177cf561a16475a9982679d60b7684ce0706efc49973d160bab586795"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -22,6 +22,7 @@
                 "sha256:713e7a8228ae80341c70586d1cc0a8caa5207346927e23d09dcbcaf18eadec80"
             ],
             "index": "pypi",
+            "markers": "python_version == '2.7'",
             "version": "==1.0.0"
         },
         "decorator": {
@@ -34,11 +35,11 @@
         },
         "django": {
             "hashes": [
-                "sha256:830d5d40a1705089502bba70605ab3246831440ffc16d1501dfeeef5f4b9c845",
-                "sha256:94395804ad80f68d66090a74d68ff2583b43333e1785a026c2aa10cf161642a6"
+                "sha256:014e3392058d94f40569206a24523ce254d55ad2f9f46c6550b0fe2e4f94cf3f",
+                "sha256:4200aefb6678019a0acf0005cd14cfce3a5e6b9b90d06145fcdd2e474ad4329c"
             ],
             "index": "pypi",
-            "version": "==1.11.22"
+            "version": "==1.11.29"
         },
         "enum34": {
             "hashes": [
